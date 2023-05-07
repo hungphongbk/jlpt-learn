@@ -1,0 +1,11 @@
+query AdminGetOneWord($id: String!) {
+  word(id: $id) {
+    word
+    pronounce
+    explain
+    kanji {
+      id
+      hv
+    }
+  }
+}

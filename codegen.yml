@@ -1,0 +1,11 @@
+overwrite: true
+schema:
+  - ./src/graphql/schema.graphql
+generates:
+  ./types/schema.d.ts:
+    config:
+      contextType: ../src/graphql/graphql#GraphQLContext
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-resolvers

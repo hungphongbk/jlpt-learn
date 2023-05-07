@@ -1,0 +1,91 @@
+import { Field, Formik, useField } from "formik";
+import React, { ComponentType, ReactNode, useMemo } from "react";
+import { KANJI_REGEX } from "@/src/const";
+import { Button, ModalBody, ModalFooter, ModalHeader } from "@chakra-ui/react";
+import TextField from "@/src/components/common/TextField";
+import KanjiCell from "@/src/components/admin/KanjiCell";
+
+const KanjiView = ({ name }: { name: string }) => {
+  const [{ value }] = useField<string>(name);
+  const [{ value: existingKanjis }] = useField<any[]>("kanji");
+
+  const kanjiChars = useMemo(() => {
+    if (Array.isArray(existingKanjis)) return existingKanjis;
+    return value.split("").reduce((acc, val) => {
+      if (KANJI_REGEX.test(val)) return [...acc, val];
+      return acc;
+    }, [] as any[]);
+  }, [existingKanjis, value]);
+
+  return (
+    <div className={"flex gap-2"}>
+      {kanjiChars.map((c, index) => (
+        <KanjiCell key={index} value={c} />
+      ))}
+    </div>
+  );
+};
+
+export default function SingleWordFormModalContent({
+  modalTitle,
+  word,
+  onSubmit,
+  onCancel,
+  Header = ModalHeader,
+  Body = ModalBody,
+  Footer = ModalFooter,
+}: {
+  modalTitle: ReactNode;
+  word: any;
+  onSubmit: any;
+  onCancel: any;
+  Header?: ComponentType<any>;
+  Body?: ComponentType<any>;
+  Footer?: ComponentType<any>;
+}) {
+  return (
+    <Formik
+      initialValues={word}
+      onSubmit={async (values) => {
+        await onSubmit(values);
+      }}
+      enableReinitialize
+    >
+      {(props) => (
+        <form onSubmit={props.handleSubmit}>
+          <Header>{modalTitle}</Header>
+          <Body>
+            <div className="flex flex-col space-y-4">
+              <KanjiView name={"word"} />
+              <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
+                <Field
+                  id={"pronounce"}
+                  name={"pronounce"}
+                  as={TextField}
+                  label={"Cách đọc"}
+                  placeholder={"ひらがな"}
+                />
+                <Field
+                  id={"explain"}
+                  name={"explain"}
+                  as={TextField}
+                  label={"Giải thích"}
+                  placeholder={"Nghĩa là gì..."}
+                />
+                {/*<Field as={MultiSelect} name={"tags"} id={"tags"} />*/}
+              </div>
+            </div>
+          </Body>
+          <Footer>
+            <Button type={"submit"} mr={2}>
+              OK
+            </Button>
+            <Button color="gray" onClick={onCancel}>
+              Decline
+            </Button>
+          </Footer>
+        </form>
+      )}
+    </Formik>
+  );
+}
