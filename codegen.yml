@@ -1,6 +1,9 @@
 overwrite: true
 schema:
-  - ./src/graphql/schema.graphql
+  - ./src/graphql/**.graphql
+documents:
+  - ./src/components/**/*.tsx
+  - ./app/**/*.tsx
 generates:
   ./types/schema.d.ts:
     config:
@@ -9,3 +12,5 @@ generates:
       - typescript
       - typescript-operations
       - typescript-resolvers
+  ./src/graphql-client/:
+    preset: 'client'

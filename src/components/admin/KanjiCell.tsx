@@ -107,15 +107,18 @@ const KanjiCell = ({ value }: { value: any }) => {
   });
 
   const [getKanji, { called, data }] = useLazyQuery(GET_ONE_KANJI, {
-    variables: { id: computed.id },
+    variables: { id: typeof value === "string" ? value : value.id },
   });
 
   useEffect(() => {
-    if (!computed.hv && !called) {
+    if (
+      (!computed.hv && !called) ||
+      (typeof value === "string" && computed.id !== value)
+    ) {
       // noinspection JSIgnoredPromiseFromCall
       getKanji();
     }
-  }, [called, computed.hv, getKanji]);
+  }, [called, computed.hv, computed.id, getKanji, value]);
   useEffect(() => {
     if (data?.kanji) {
       setComputed(data.kanji);

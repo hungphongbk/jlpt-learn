@@ -1,0 +1,28 @@
+type Tag{
+  id:String!
+}
+type Kanji{
+  id:String!
+  hv:String
+}
+type Word{
+  id: ID!
+  word:String!
+  pronounce:String!
+  tags:[Tag!]
+  kanji:[Kanji!]
+  explain:String!
+}
+input WordInsertInput{
+  word:String!
+  pronounce:String!
+  tags:[String!]
+  explain:String!
+}
+input WordQueryInput{
+  word:StringComparator
+  tags:ArrayStringComparator
+}
+input KanjiUpsertInput{
+  hv:String!
+}

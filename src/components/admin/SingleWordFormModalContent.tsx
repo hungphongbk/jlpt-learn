@@ -1,12 +1,21 @@
 import { Field, Formik, useField } from "formik";
-import React, { ComponentType, ReactNode, useMemo } from "react";
+import React, { ComponentType, ReactNode, useCallback, useMemo } from "react";
 import { KANJI_REGEX } from "@/src/const";
-import { Button, ModalBody, ModalFooter, ModalHeader } from "@chakra-ui/react";
+import {
+  Button,
+  FormControl,
+  FormLabel,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+} from "@chakra-ui/react";
 import TextField from "@/src/components/common/TextField";
 import KanjiCell from "@/src/components/admin/KanjiCell";
+import TagAutocomplete from "@/src/components/admin/TagAutocomplete";
 
 const KanjiView = ({ name }: { name: string }) => {
   const [{ value }] = useField<string>(name);
+  // console.log(value);
   const [{ value: existingKanjis }] = useField<any[]>("kanji");
 
   const kanjiChars = useMemo(() => {
@@ -16,6 +25,7 @@ const KanjiView = ({ name }: { name: string }) => {
       return acc;
     }, [] as any[]);
   }, [existingKanjis, value]);
+  // console.log(kanjiChars);
 
   return (
     <div className={"flex gap-2"}>
@@ -34,6 +44,7 @@ export default function SingleWordFormModalContent({
   Header = ModalHeader,
   Body = ModalBody,
   Footer = ModalFooter,
+  afterSubmit,
 }: {
   modalTitle: ReactNode;
   word: any;
@@ -42,15 +53,17 @@ export default function SingleWordFormModalContent({
   Header?: ComponentType<any>;
   Body?: ComponentType<any>;
   Footer?: ComponentType<any>;
+  afterSubmit?: any;
 }) {
+  const _onSubmit = useCallback(
+    async (values: any) => {
+      await onSubmit(values);
+    },
+    [onSubmit]
+  );
+
   return (
-    <Formik
-      initialValues={word}
-      onSubmit={async (values) => {
-        await onSubmit(values);
-      }}
-      enableReinitialize
-    >
+    <Formik initialValues={word} onSubmit={_onSubmit} enableReinitialize>
       {(props) => (
         <form onSubmit={props.handleSubmit}>
           <Header>{modalTitle}</Header>
@@ -64,6 +77,7 @@ export default function SingleWordFormModalContent({
                   as={TextField}
                   label={"Cách đọc"}
                   placeholder={"ひらがな"}
+                  variant={"filled"}
                 />
                 <Field
                   id={"explain"}
@@ -71,14 +85,33 @@ export default function SingleWordFormModalContent({
                   as={TextField}
                   label={"Giải thích"}
                   placeholder={"Nghĩa là gì..."}
+                  variant={"filled"}
                 />
+                <FormControl id="email">
+                  <FormLabel>Tags</FormLabel>
+                  <TagAutocomplete name={"tags"} />
+                </FormControl>
                 {/*<Field as={MultiSelect} name={"tags"} id={"tags"} />*/}
               </div>
             </div>
           </Body>
           <Footer>
-            <Button type={"submit"} mr={2}>
+            <Button
+              onClick={() => props.submitForm().then(() => afterSubmit?.())}
+              mr={2}
+            >
               OK
+            </Button>
+            <Button
+              onClick={() => {
+                const tags = [...props.values.tags];
+                props
+                  .submitForm()
+                  .then(() => props.resetForm({ ...word, tags }));
+              }}
+              mr={2}
+            >
+              OK và tiếp tục thêm
             </Button>
             <Button color="gray" onClick={onCancel}>
               Decline

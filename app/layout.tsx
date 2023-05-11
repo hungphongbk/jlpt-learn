@@ -6,7 +6,7 @@ import { Noto_Sans_Display, Noto_Serif_JP } from "next/font/google";
 import { ChakraProvider } from "@chakra-ui/react";
 import { CacheProvider } from "@chakra-ui/next-js";
 import { ApolloProvider } from "@apollo/client";
-import client from "@/src/graphql-client";
+import client from "@/src/graphql-client/GraphQLClient";
 
 const notoSansJp = Noto_Serif_JP({
   weight: ["400"],

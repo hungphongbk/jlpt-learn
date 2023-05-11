@@ -3,7 +3,7 @@ import { MutationResolvers } from "@/types";
 
 const addNewWord: MutationResolvers["addNewWord"] = async (
   _: any,
-  { word },
+  { word: { tags: _tags = [], ...word } },
   { firestore }
 ) => {
   const kanji = await word.word.split("").reduce(async (acc, val) => {
@@ -17,14 +17,19 @@ const addNewWord: MutationResolvers["addNewWord"] = async (
     }
     return await acc;
   }, Promise.resolve([] as string[]));
+  const tags = _tags!.map((id) =>
+    firestore.collection(FirestoreCollections.Tag).doc(id)
+  );
   const result = await firestore
     .collection(FirestoreCollections.Vocabulary)
     .add({
       ...word,
       kanji,
+      tags,
     });
   return {
     id: result!.id,
+    tags,
     ...word,
   } as any;
 };

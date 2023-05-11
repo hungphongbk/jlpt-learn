@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate": "graphql-codegen -w",
+    "generate": "graphql-codegen",
     "deploy": "vercel --prod",
     "deploy:env": "bash env-push.sh .env production"
   },
@@ -21,7 +21,6 @@
     "@choc-ui/chakra-autocomplete": "^5.1.4",
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
-    "@graphql-codegen/cli": "^3.3.1",
     "@graphql-codegen/near-operation-file-preset": "^2.5.0",
     "@graphql-codegen/typescript": "^3.0.4",
     "@next/font": "^13.4.0",
@@ -29,6 +28,9 @@
     "@types/react": "18.2.5",
     "@types/react-dom": "18.2.3",
     "autoprefixer": "10.4.14",
+    "axios": "^1.4.0",
+    "cheerio": "^1.0.0-rc.12",
+    "escape-string-regexp": "^1.0.5",
     "eslint": "8.39.0",
     "eslint-config-next": "13.3.4",
     "file-loader": "^6.2.0",
@@ -38,7 +40,9 @@
     "framer-motion": "^10.12.8",
     "graphql": "^16.6.0",
     "graphql-yoga": "^3.9.1",
-    "next": "13.3.4",
+    "html-entities": "^1.2.1",
+    "lodash": "^4.17.21",
+    "next": "^13.4.2-canary.4",
     "postcss": "8.4.23",
     "raw-loader": "^4.0.2",
     "react": "18.2.0",
@@ -48,12 +52,16 @@
     "typescript": "5.0.4"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^3.3.1",
+    "@graphql-codegen/client-preset": "^3.0.1",
     "@graphql-codegen/typescript-operations": "^3.0.4",
     "@graphql-codegen/typescript-react-apollo": "^3.3.7",
     "@graphql-codegen/typescript-react-query": "^4.1.0",
     "@graphql-codegen/typescript-resolvers": "^3.2.1",
+    "@types/lodash": "^4.14.194",
     "eslint-config-prettier": "^8.8.0",
     "graphql-tag": "^2.12.6",
-    "prettier": "^2.8.8"
+    "prettier": "^2.8.8",
+    "ts-node": "^10.9.1"
   }
 }

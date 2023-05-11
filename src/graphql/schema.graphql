@@ -9,39 +9,13 @@ input ArrayStringComparator{
   arrayContainsAny:[String!]
 }
 
-# Particular
-type Tag{
-  id:String!
-}
-type Kanji{
-  id:String!
-  hv:String
-}
-type Word{
-  id: ID!
-  word:String!
-  pronounce:String!
-  tags:[Tag!]
-  kanji:[Kanji!]
-  explain:String!
-}
-input WordInsertInput{
-  word:String!
-  pronounce:String!
-  tags:[String!]
-  explain:String!
-}
-input WordQueryInput{
-  word:StringComparator
-  tags:ArrayStringComparator
-}
-input KanjiUpsertInput{
-  hv:String!
-}
 type Query{
   words(where: WordQueryInput):[Word!]
   word(id:String!):Word!
   kanji(id:String!):Kanji!
+  tags:[Tag!]
+  jishoSearchWord(word: String!):JishoAPIResult!
+  jdictSearchWord(word: String!):JDictAPIResult!
 }
 type Mutation{
   addNewWord(word:WordInsertInput!):Word!

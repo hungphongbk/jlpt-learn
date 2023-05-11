@@ -7,6 +7,11 @@ import {
 } from "@/src/graphql/resolvers/query/words";
 import { queryOneKanji } from "@/src/graphql/resolvers/query/kanji";
 import { upsertKanji } from "@/src/graphql/resolvers/mutation/upsertKanji";
+import { queryTags } from "@/src/graphql/resolvers/query/tags";
+import {
+  queryJDictSearchWord,
+  queryJishoSearchWord,
+} from "@/src/graphql/resolvers/query/lib";
 
 export default {
   Mutation: {
@@ -17,6 +22,9 @@ export default {
     words: queryWords,
     word: queryOneWord,
     kanji: queryOneKanji,
+    tags: queryTags,
+    jishoSearchWord: queryJishoSearchWord,
+    jdictSearchWord: queryJDictSearchWord,
   },
   Word: {
     kanji: queryKanjiInWord,

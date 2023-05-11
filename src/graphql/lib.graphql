@@ -1,0 +1,21 @@
+type JishoJapaneseWord{
+  word:String
+  reading:String
+}
+type JishoResult{
+  japanese:[JishoJapaneseWord!]!
+}
+type JishoAPIResult{
+  data:[JishoResult!]!
+}
+
+type JDictWord{
+  id:Int!
+  slug:String!
+  word:String!
+  kana:String!
+  suggest_mean:String!
+}
+type JDictAPIResult{
+  data:[JDictWord!]!
+}
