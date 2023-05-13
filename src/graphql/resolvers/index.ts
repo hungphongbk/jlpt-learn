@@ -6,7 +6,10 @@ import {
   queryWords,
 } from "@/src/graphql/resolvers/query/words";
 import { queryOneKanji } from "@/src/graphql/resolvers/query/kanji";
-import { upsertKanji } from "@/src/graphql/resolvers/mutation/upsertKanji";
+import {
+  upsertKanji,
+  upsertKanjis,
+} from "@/src/graphql/resolvers/mutation/upsertKanji";
 import { queryTags } from "@/src/graphql/resolvers/query/tags";
 import {
   queryJDictSearchWord,
@@ -17,6 +20,7 @@ export default {
   Mutation: {
     addNewWord,
     upsertKanji,
+    upsertKanjis,
   },
   Query: {
     words: queryWords,

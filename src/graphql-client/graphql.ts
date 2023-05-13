@@ -24,10 +24,18 @@ export type JDictApiResult = {
   data: Array<JDictWord>;
 };
 
+export type JDictKanji = {
+  __typename?: 'JDictKanji';
+  hanviet: Scalars['String'];
+  id: Scalars['Int'];
+  kanji: Scalars['String'];
+};
+
 export type JDictWord = {
   __typename?: 'JDictWord';
   id: Scalars['Int'];
   kana: Scalars['String'];
+  kanjis: Array<JDictKanji>;
   slug: Scalars['String'];
   suggest_mean: Scalars['String'];
   word: Scalars['String'];
@@ -59,10 +67,16 @@ export type KanjiUpsertInput = {
   hv: Scalars['String'];
 };
 
+export type KanjiUpsertInputPair = {
+  hv: Scalars['String'];
+  id: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   addNewWord: Word;
   upsertKanji: Kanji;
+  upsertKanjis: Scalars['Boolean'];
 };
 
 
@@ -74,6 +88,11 @@ export type MutationAddNewWordArgs = {
 export type MutationUpsertKanjiArgs = {
   id: Scalars['String'];
   kanji: KanjiUpsertInput;
+};
+
+
+export type MutationUpsertKanjisArgs = {
+  kanjis: Array<KanjiUpsertInputPair>;
 };
 
 export type Query = {

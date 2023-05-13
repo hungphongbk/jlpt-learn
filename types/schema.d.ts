@@ -25,10 +25,18 @@ export type JDictApiResult = {
   data: Array<JDictWord>;
 };
 
+export type JDictKanji = {
+  __typename?: 'JDictKanji';
+  hanviet: Scalars['String'];
+  id: Scalars['Int'];
+  kanji: Scalars['String'];
+};
+
 export type JDictWord = {
   __typename?: 'JDictWord';
   id: Scalars['Int'];
   kana: Scalars['String'];
+  kanjis: Array<JDictKanji>;
   slug: Scalars['String'];
   suggest_mean: Scalars['String'];
   word: Scalars['String'];
@@ -60,10 +68,16 @@ export type KanjiUpsertInput = {
   hv: Scalars['String'];
 };
 
+export type KanjiUpsertInputPair = {
+  hv: Scalars['String'];
+  id: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   addNewWord: Word;
   upsertKanji: Kanji;
+  upsertKanjis: Scalars['Boolean'];
 };
 
 
@@ -75,6 +89,11 @@ export type MutationAddNewWordArgs = {
 export type MutationUpsertKanjiArgs = {
   id: Scalars['String'];
   kanji: KanjiUpsertInput;
+};
+
+
+export type MutationUpsertKanjisArgs = {
+  kanjis: Array<KanjiUpsertInputPair>;
 };
 
 export type Query = {
@@ -261,12 +280,14 @@ export type ResolversTypes = {
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   JDictAPIResult: ResolverTypeWrapper<JDictApiResult>;
+  JDictKanji: ResolverTypeWrapper<JDictKanji>;
   JDictWord: ResolverTypeWrapper<JDictWord>;
   JishoAPIResult: ResolverTypeWrapper<JishoApiResult>;
   JishoJapaneseWord: ResolverTypeWrapper<JishoJapaneseWord>;
   JishoResult: ResolverTypeWrapper<JishoResult>;
   Kanji: ResolverTypeWrapper<Kanji>;
   KanjiUpsertInput: KanjiUpsertInput;
+  KanjiUpsertInputPair: KanjiUpsertInputPair;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
@@ -284,12 +305,14 @@ export type ResolversParentTypes = {
   ID: Scalars['ID'];
   Int: Scalars['Int'];
   JDictAPIResult: JDictApiResult;
+  JDictKanji: JDictKanji;
   JDictWord: JDictWord;
   JishoAPIResult: JishoApiResult;
   JishoJapaneseWord: JishoJapaneseWord;
   JishoResult: JishoResult;
   Kanji: Kanji;
   KanjiUpsertInput: KanjiUpsertInput;
+  KanjiUpsertInputPair: KanjiUpsertInputPair;
   Mutation: {};
   Query: {};
   String: Scalars['String'];
@@ -305,9 +328,17 @@ export type JDictApiResultResolvers<ContextType = GraphQLContext, ParentType ext
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type JDictKanjiResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['JDictKanji'] = ResolversParentTypes['JDictKanji']> = {
+  hanviet?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  kanji?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type JDictWordResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['JDictWord'] = ResolversParentTypes['JDictWord']> = {
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   kana?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  kanjis?: Resolver<Array<ResolversTypes['JDictKanji']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   suggest_mean?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   word?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -339,6 +370,7 @@ export type KanjiResolvers<ContextType = GraphQLContext, ParentType extends Reso
 export type MutationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   addNewWord?: Resolver<ResolversTypes['Word'], ParentType, ContextType, RequireFields<MutationAddNewWordArgs, 'word'>>;
   upsertKanji?: Resolver<ResolversTypes['Kanji'], ParentType, ContextType, RequireFields<MutationUpsertKanjiArgs, 'id' | 'kanji'>>;
+  upsertKanjis?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationUpsertKanjisArgs, 'kanjis'>>;
 };
 
 export type QueryResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
@@ -367,6 +399,7 @@ export type WordResolvers<ContextType = GraphQLContext, ParentType extends Resol
 
 export type Resolvers<ContextType = GraphQLContext> = {
   JDictAPIResult?: JDictApiResultResolvers<ContextType>;
+  JDictKanji?: JDictKanjiResolvers<ContextType>;
   JDictWord?: JDictWordResolvers<ContextType>;
   JishoAPIResult?: JishoApiResultResolvers<ContextType>;
   JishoJapaneseWord?: JishoJapaneseWordResolvers<ContextType>;

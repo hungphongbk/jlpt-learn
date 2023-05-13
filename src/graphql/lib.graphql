@@ -9,12 +9,18 @@ type JishoAPIResult{
   data:[JishoResult!]!
 }
 
+type JDictKanji{
+  id:Int!
+  kanji: String!
+  hanviet: String!
+}
 type JDictWord{
   id:Int!
   slug:String!
   word:String!
   kana:String!
   suggest_mean:String!
+  kanjis: [JDictKanji!]!
 }
 type JDictAPIResult{
   data:[JDictWord!]!

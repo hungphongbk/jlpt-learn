@@ -26,3 +26,7 @@ input WordQueryInput{
 input KanjiUpsertInput{
   hv:String!
 }
+input KanjiUpsertInputPair{
+  id:String!
+  hv:String!
+}

@@ -20,6 +20,7 @@ type Query{
 type Mutation{
   addNewWord(word:WordInsertInput!):Word!
   upsertKanji(id:String!, kanji:KanjiUpsertInput!):Kanji!
+  upsertKanjis(kanjis: [KanjiUpsertInputPair!]!):Boolean!
 }
 schema{
   query: Query
