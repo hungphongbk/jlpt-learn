@@ -10,6 +10,10 @@ import admin from "firebase-admin";
 import { mergeTypeDefs } from "@graphql-tools/merge";
 import JishoAPI from "@/lib/jisho-dict";
 import JDictAPI from "@/lib/jdict";
+import { useResponseCache } from "@graphql-yoga/plugin-response-cache";
+import { createRedisCache } from "./utils/redis-kv";
+
+const cache = createRedisCache({});
 
 export interface GraphQLContext extends YogaInitialContext {
   firestore: admin.firestore.Firestore;
@@ -33,5 +37,14 @@ const graphqlServer = createYoga({
     };
   },
   graphqlEndpoint: "/api/graphql",
+  plugins: [
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useResponseCache({
+      session: () => null,
+      ttl: 30_000,
+      // @ts-ignore
+      cache,
+    }),
+  ],
 });
 export default graphqlServer;
