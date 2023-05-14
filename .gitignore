@@ -33,3 +33,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+src/firebase-admin/jlpt-learn-acdbb-firebase-adminsdk-oofq2-78a8e93407.json

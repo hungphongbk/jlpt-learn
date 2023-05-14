@@ -1,5 +1,5 @@
 import admin from "firebase-admin";
-import serviceAccount from "./jlpt-learn-acdbb-firebase-adminsdk-oofq2-a8b220f7fb.json";
+import serviceAccount from "./jlpt-learn-acdbb-firebase-adminsdk-oofq2-78a8e93407.json";
 
 export function initializeAdmin() {
   if (admin.apps.length > 0) {
