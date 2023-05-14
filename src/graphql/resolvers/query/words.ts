@@ -5,12 +5,26 @@ import DocumentReference = firestore.DocumentReference;
 
 export const queryWords: QueryResolvers["words"] = async (
   _,
-  { where },
+  { where, limit },
   { firestore }
 ) => {
-  const docs = (
-    await firestore.collection(FirestoreCollections.Vocabulary).get()
-  ).docs.map((doc) => ({
+  let ref: firestore.Query<firestore.DocumentData> = firestore.collection(
+    FirestoreCollections.Vocabulary
+  );
+  if (where?.tags?.arrayContainsAny) {
+    ref = ref.where(
+      "tags",
+      "array-contains-any",
+      where.tags.arrayContainsAny.map((id) =>
+        firestore.collection(FirestoreCollections.Tag).doc(id)
+      )
+    );
+  }
+  if (limit) {
+    ref = ref.limit(limit);
+  }
+
+  const docs = (await ref.get()).docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
   }));

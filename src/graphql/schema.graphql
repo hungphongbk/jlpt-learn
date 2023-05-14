@@ -10,7 +10,7 @@ input ArrayStringComparator{
 }
 
 type Query{
-  words(where: WordQueryInput):[Word!]
+  words(where: WordQueryInput, limit: Int):[Word!]
   word(id:String!):Word!
   kanji(id:String!):Kanji!
   tags:[Tag!]

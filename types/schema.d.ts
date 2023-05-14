@@ -128,6 +128,7 @@ export type QueryWordArgs = {
 
 
 export type QueryWordsArgs = {
+  limit?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<WordQueryInput>;
 };
 
@@ -141,6 +142,7 @@ export type StringComparator = {
 export type Tag = {
   __typename?: 'Tag';
   id: Scalars['String'];
+  label: Scalars['String'];
 };
 
 export type Word = {
@@ -384,6 +386,7 @@ export type QueryResolvers<ContextType = GraphQLContext, ParentType extends Reso
 
 export type TagResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Tag'] = ResolversParentTypes['Tag']> = {
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

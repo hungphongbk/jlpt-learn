@@ -127,6 +127,7 @@ export type QueryWordArgs = {
 
 
 export type QueryWordsArgs = {
+  limit?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<WordQueryInput>;
 };
 
@@ -140,6 +141,7 @@ export type StringComparator = {
 export type Tag = {
   __typename?: 'Tag';
   id: Scalars['String'];
+  label: Scalars['String'];
 };
 
 export type Word = {

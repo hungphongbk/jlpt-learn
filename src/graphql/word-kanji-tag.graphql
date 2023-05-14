@@ -1,5 +1,6 @@
 type Tag{
   id:String!
+  label:String!
 }
 type Kanji{
   id:String!
