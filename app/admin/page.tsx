@@ -34,7 +34,7 @@ function Page() {
           <AddNewWord />
           <BatchImport />
         </HStack>
-        <SimpleGrid columns={{ base: 2, md: 4, lg: 6, xl: 10 }} spacing={2}>
+        <SimpleGrid columns={{ base: 2, md: 4, lg: 6, xl: 8 }} spacing={2}>
           {data?.words.map((word: any) => (
             <Card key={word.id} size={"sm"}>
               <CardHeader

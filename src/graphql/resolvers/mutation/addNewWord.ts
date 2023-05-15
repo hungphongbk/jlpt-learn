@@ -26,6 +26,7 @@ const addNewWord: MutationResolvers["addNewWord"] = async (
       ...word,
       kanji,
       tags,
+      createdAt: Date(),
     });
   return {
     id: result!.id,

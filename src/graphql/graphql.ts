@@ -41,7 +41,7 @@ const graphqlServer = createYoga({
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useResponseCache({
       session: () => null,
-      ttl: 30_000,
+      ttl: 300_000,
       // @ts-ignore
       cache,
     }),

@@ -4,7 +4,12 @@ import type {
   RedisCacheParameter,
 } from "@envelop/response-cache-redis";
 import type { Cache } from "@envelop/response-cache";
-import { kv } from "@vercel/kv";
+import { createClient } from "@vercel/kv";
+
+const kv = createClient({
+  url: process.env.KV2_REST_API_URL ?? "",
+  token: process.env.KV2_REST_API_TOKEN ?? "",
+});
 
 export const createRedisCache = (
   params: Omit<RedisCacheParameter, "redis">
