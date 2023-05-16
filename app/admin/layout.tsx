@@ -59,13 +59,21 @@ export default function HomeLayout({
   }, [router, user]);
 
   return (
-    <Flex>
-      <Box w="200px" h={"full"} pt={2}>
+    <>
+      <Box
+        w="200px"
+        h={"full"}
+        pos={"fixed"}
+        pt={2}
+        borderRight={"1px solid #ccc"}
+      >
         <NavItem href={"/admin"}>Trang chủ</NavItem>
         <NavItem href={"/admin/tags"}>Tags</NavItem>
       </Box>
-      <Box flex={1}>{children}</Box>
+      <Box flex={1} ml={"210px"}>
+        {children}
+      </Box>
       {modal}
-    </Flex>
+    </>
   );
 }

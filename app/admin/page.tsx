@@ -10,19 +10,10 @@ import {
   Text,
 } from "@chakra-ui/react";
 import BatchImport from "@/src/components/admin/BatchImport";
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { Card } from "@chakra-ui/card";
 import { useRouter } from "next/navigation";
-
-const GET_ALL_WORD = gql`
-  query AdminGetAllWord {
-    words {
-      id
-      word
-      pronounce
-    }
-  }
-`;
+import { GET_ALL_WORD } from "@/src/components/gql";
 
 function Page() {
   const { data } = useQuery(GET_ALL_WORD);
@@ -35,7 +26,7 @@ function Page() {
           <BatchImport />
         </HStack>
         <SimpleGrid columns={{ base: 2, md: 4, lg: 6, xl: 8 }} spacing={2}>
-          {data?.words.map((word: any) => (
+          {data?.words?.map((word: any) => (
             <Card key={word.id} size={"sm"}>
               <CardHeader
                 onClick={() => {

@@ -12,11 +12,16 @@ import JishoAPI from "@/lib/jisho-dict";
 import JDictAPI from "@/lib/jdict";
 import { useResponseCache } from "@graphql-yoga/plugin-response-cache";
 import { createRedisCache } from "./utils/redis-kv";
+import CollectionReference = admin.firestore.CollectionReference;
+import DocumentData = admin.firestore.DocumentData;
 
 const cache = createRedisCache({});
 
+type Docs = "vocabulary" | "kanji" | "tag";
+
 export interface GraphQLContext extends YogaInitialContext {
   firestore: admin.firestore.Firestore;
+  fsCollection: (docName: Docs) => CollectionReference<DocumentData>;
   jisho: JishoAPI;
   jdict: typeof JDictAPI;
 }
@@ -30,8 +35,10 @@ const graphqlServer = createYoga({
   }) as any,
   context() {
     initializeAdmin();
+    const firestore = getFirestore();
     return {
-      firestore: getFirestore(),
+      firestore,
+      fsCollection: (doc: Docs) => firestore.collection(doc),
       jisho: new JishoAPI(),
       jdict: JDictAPI,
     };

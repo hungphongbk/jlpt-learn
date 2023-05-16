@@ -1,7 +1,15 @@
 type Tag{
   id:String!
   label:String!
+  children:[Tag!]
+  parent:Tag
 }
+input TagUpsertInput{
+  id:String!
+  label:String
+  parentId:String
+}
+
 type Kanji{
   id:String!
   hv:String

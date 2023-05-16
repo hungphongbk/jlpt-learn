@@ -5,7 +5,6 @@ input StringComparator{
   notIn:[String!]
 }
 input ArrayStringComparator{
-  arrayContains:[String!]
   arrayContainsAny:[String!]
 }
 
@@ -21,6 +20,7 @@ type Mutation{
   addNewWord(word:WordInsertInput!):Word!
   upsertKanji(id:String!, kanji:KanjiUpsertInput!):Kanji!
   upsertKanjis(kanjis: [KanjiUpsertInputPair!]!):Boolean!
+  upsertTag(tag:TagUpsertInput!):Tag!
 }
 schema{
   query: Query

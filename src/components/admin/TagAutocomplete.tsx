@@ -6,16 +6,9 @@ import {
   AutoCompleteList,
   AutoCompleteTag,
 } from "@choc-ui/chakra-autocomplete";
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { useField } from "formik";
-
-const QUERY_ALL_TAGS = gql`
-  query AdminAllTags {
-    tags {
-      id
-    }
-  }
-`;
+import { QUERY_ALL_TAGS } from "@/src/components/gql";
 
 export default function TagAutocomplete({ name }: { name: string }) {
   const [_, { value }, { setValue }] = useField(name);
@@ -40,7 +33,7 @@ export default function TagAutocomplete({ name }: { name: string }) {
         }
       </AutoCompleteInput>
       <AutoCompleteList>
-        {data?.tags.map(({ id }: any) => (
+        {data?.tags?.map(({ id }: any) => (
           <AutoCompleteItem
             key={`option-${id}`}
             value={id}

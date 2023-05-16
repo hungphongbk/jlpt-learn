@@ -16,7 +16,6 @@ export type Scalars = {
 };
 
 export type ArrayStringComparator = {
-  arrayContains?: InputMaybe<Array<Scalars['String']>>;
   arrayContainsAny?: InputMaybe<Array<Scalars['String']>>;
 };
 
@@ -78,6 +77,7 @@ export type Mutation = {
   addNewWord: Word;
   upsertKanji: Kanji;
   upsertKanjis: Scalars['Boolean'];
+  upsertTag: Tag;
 };
 
 
@@ -94,6 +94,11 @@ export type MutationUpsertKanjiArgs = {
 
 export type MutationUpsertKanjisArgs = {
   kanjis: Array<KanjiUpsertInputPair>;
+};
+
+
+export type MutationUpsertTagArgs = {
+  tag: TagUpsertInput;
 };
 
 export type Query = {
@@ -141,8 +146,16 @@ export type StringComparator = {
 
 export type Tag = {
   __typename?: 'Tag';
+  children?: Maybe<Array<Tag>>;
   id: Scalars['String'];
   label: Scalars['String'];
+  parent?: Maybe<Tag>;
+};
+
+export type TagUpsertInput = {
+  id: Scalars['String'];
+  label?: InputMaybe<Scalars['String']>;
+  parentId?: InputMaybe<Scalars['String']>;
 };
 
 export type Word = {
@@ -166,11 +179,6 @@ export type WordQueryInput = {
   tags?: InputMaybe<ArrayStringComparator>;
   word?: InputMaybe<StringComparator>;
 };
-
-export type AdminGetAllWordQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type AdminGetAllWordQuery = { __typename?: 'Query', words?: Array<{ __typename?: 'Word', id: string, word: string, pronounce: string }> | null };
 
 export type AdminSearchFromJDictQueryVariables = Exact<{
   word: Scalars['String'];
@@ -204,7 +212,14 @@ export type AdminUpsertOneKanjiMutation = { __typename?: 'Mutation', upsertKanji
 export type AdminAllTagsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AdminAllTagsQuery = { __typename?: 'Query', tags?: Array<{ __typename?: 'Tag', id: string }> | null };
+export type AdminAllTagsQuery = { __typename?: 'Query', tags?: Array<{ __typename?: 'Tag', id: string, label: string, children?: Array<{ __typename?: 'Tag', id: string, label: string }> | null }> | null };
+
+export type AdminGetAllWordQueryVariables = Exact<{
+  where?: InputMaybe<WordQueryInput>;
+}>;
+
+
+export type AdminGetAllWordQuery = { __typename?: 'Query', words?: Array<{ __typename?: 'Word', id: string, word: string, pronounce: string, explain: string }> | null };
 
 
 
@@ -295,6 +310,7 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars['String']>;
   StringComparator: StringComparator;
   Tag: ResolverTypeWrapper<Tag>;
+  TagUpsertInput: TagUpsertInput;
   Word: ResolverTypeWrapper<Word>;
   WordInsertInput: WordInsertInput;
   WordQueryInput: WordQueryInput;
@@ -320,6 +336,7 @@ export type ResolversParentTypes = {
   String: Scalars['String'];
   StringComparator: StringComparator;
   Tag: Tag;
+  TagUpsertInput: TagUpsertInput;
   Word: Word;
   WordInsertInput: WordInsertInput;
   WordQueryInput: WordQueryInput;
@@ -373,6 +390,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   addNewWord?: Resolver<ResolversTypes['Word'], ParentType, ContextType, RequireFields<MutationAddNewWordArgs, 'word'>>;
   upsertKanji?: Resolver<ResolversTypes['Kanji'], ParentType, ContextType, RequireFields<MutationUpsertKanjiArgs, 'id' | 'kanji'>>;
   upsertKanjis?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationUpsertKanjisArgs, 'kanjis'>>;
+  upsertTag?: Resolver<ResolversTypes['Tag'], ParentType, ContextType, RequireFields<MutationUpsertTagArgs, 'tag'>>;
 };
 
 export type QueryResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
@@ -385,8 +403,10 @@ export type QueryResolvers<ContextType = GraphQLContext, ParentType extends Reso
 };
 
 export type TagResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Tag'] = ResolversParentTypes['Tag']> = {
+  children?: Resolver<Maybe<Array<ResolversTypes['Tag']>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  parent?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

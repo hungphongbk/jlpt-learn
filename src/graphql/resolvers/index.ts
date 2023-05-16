@@ -10,17 +10,22 @@ import {
   upsertKanji,
   upsertKanjis,
 } from "@/src/graphql/resolvers/mutation/upsertKanji";
-import { queryTags } from "@/src/graphql/resolvers/query/tags";
+import {
+  queryChildrenTags,
+  queryTags,
+} from "@/src/graphql/resolvers/query/tags";
 import {
   queryJDictSearchWord,
   queryJishoSearchWord,
 } from "@/src/graphql/resolvers/query/lib";
+import { upsertTag } from "@/src/graphql/resolvers/mutation/upsertTag";
 
 export default {
   Mutation: {
     addNewWord,
     upsertKanji,
     upsertKanjis,
+    upsertTag,
   },
   Query: {
     words: queryWords,
@@ -32,5 +37,8 @@ export default {
   },
   Word: {
     kanji: queryKanjiInWord,
+  },
+  Tag: {
+    children: queryChildrenTags,
   },
 } as IResolvers;
