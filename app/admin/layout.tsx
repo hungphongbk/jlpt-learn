@@ -1,10 +1,12 @@
 "use client";
-import React, { PropsWithChildren, ReactNode } from "react";
+import React, { PropsWithChildren, ReactNode, useState } from "react";
 import { useAuthContext } from "@/src/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { Box, Flex, FlexProps, Icon } from "@chakra-ui/react";
 import { IconType } from "react-icons";
 import { Link, LinkProps } from "@chakra-ui/next-js";
+import AddNewWord from "@/src/components/admin/AddNewWord";
+import { AdminContext } from "@/app/admin/context";
 
 interface NavItemProps extends FlexProps {
   href: LinkProps["href"];
@@ -53,13 +55,14 @@ export default function HomeLayout({
 }: PropsWithChildren<any>) {
   const { user } = useAuthContext();
   const router = useRouter();
+  const [tags, setTags] = useState<String[]>([]);
 
   React.useEffect(() => {
     if (user == null) router.push("/");
   }, [router, user]);
 
   return (
-    <>
+    <AdminContext.Provider value={{ tags, setTags }}>
       <Box
         w="200px"
         h={"full"}
@@ -73,7 +76,8 @@ export default function HomeLayout({
       <Box flex={1} ml={"210px"}>
         {children}
       </Box>
+      <AddNewWord />
       {modal}
-    </>
+    </AdminContext.Provider>
   );
 }

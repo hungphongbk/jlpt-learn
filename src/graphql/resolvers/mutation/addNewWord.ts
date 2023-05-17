@@ -1,10 +1,11 @@
 import { FirestoreCollections, KANJI_REGEX } from "@/src/const";
 import { MutationResolvers } from "@/types";
+import { FieldValue } from "firebase-admin/firestore";
 
 const addNewWord: MutationResolvers["addNewWord"] = async (
   _: any,
-  { word: { tags: _tags = [], ...word } },
-  { firestore }
+  { word: { id: existId, tags: _tags = [], ...word } },
+  { firestore, fsCollection }
 ) => {
   const kanji = await word.word.split("").reduce(async (acc, val) => {
     if (KANJI_REGEX.test(val)) {
@@ -20,19 +21,34 @@ const addNewWord: MutationResolvers["addNewWord"] = async (
   const tags = _tags!.map((id) =>
     firestore.collection(FirestoreCollections.Tag).doc(id)
   );
-  const result = await firestore
-    .collection(FirestoreCollections.Vocabulary)
-    .add({
-      ...word,
-      kanji,
+  if (existId) {
+    await fsCollection("vocabulary")
+      .doc(existId)
+      .update({
+        ...word,
+        tags: FieldValue.arrayUnion(...tags),
+      });
+
+    return {
+      id: existId,
       tags,
-      createdAt: Date(),
-    });
-  return {
-    id: result!.id,
-    tags,
-    ...word,
-  } as any;
+      ...word,
+    };
+  } else {
+    const result = await firestore
+      .collection(FirestoreCollections.Vocabulary)
+      .add({
+        ...word,
+        kanji,
+        tags,
+        createdAt: Date(),
+      });
+    return {
+      id: result!.id,
+      tags,
+      ...word,
+    } as any;
+  }
 };
 
 export default addNewWord;

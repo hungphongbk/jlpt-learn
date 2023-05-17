@@ -1,10 +1,10 @@
 "use client";
 
 import {
-  Button,
   chakra,
   Flex,
   FlexProps,
+  IconButton,
   Input,
   Modal,
   ModalContent,
@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/react";
 import React, {
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -25,6 +26,10 @@ import SingleWordFormModalContent from "@/src/components/admin/SingleWordFormMod
 import { useField } from "formik";
 import { debounce, flatten } from "lodash";
 import { graphql } from "@/src/graphql-client/gql";
+import { AddIcon } from "@chakra-ui/icons";
+import { AdminContext } from "@/app/admin/context";
+import { SEARCH_WORD } from "@/src/components/gql";
+import { uniq } from "ramda";
 
 const SUGGEST_FROM_JDICT = graphql(`
   query AdminSearchFromJDict($word: String!) {
@@ -43,16 +48,19 @@ const SuggestFromJisho = () => {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [fetch, { data }] = useLazyQuery(SUGGEST_FROM_JDICT);
+  const [searchExist] = useLazyQuery(SEARCH_WORD);
   const [_1, _2, { setValue: setWord }] = useField("word");
   const [_3, _4, { setValue: setPronounce }] = useField("pronounce");
   const [_5, _6, { setValue: setExplain }] = useField("explain");
+  const [_7, _8, { setValue: setId }] = useField("id");
+  const [{ value: existTags }, _0, { setValue: setTags }] = useField("tags");
 
   const rendered = useMemo(() => {
     return flatten(data?.jdictSearchWord?.data ?? []);
   }, [data]);
 
   const deboucedFetch = useRef(
-    debounce((word) => fetch({ variables: { word } }), 300)
+    debounce((word) => fetch({ variables: { word } }), 500)
   );
 
   useEffect(() => {
@@ -60,58 +68,72 @@ const SuggestFromJisho = () => {
   }, [search, fetch, open]);
 
   const onClick = useCallback(
-    ({ word, kana, suggest_mean }: any) => {
-      setWord(word);
-      setPronounce(kana);
-      setExplain(suggest_mean.split(";").filter(Boolean).join("; "));
+    async ({ word, kana, suggest_mean }: any) => {
+      const { data: existWord } = await searchExist({
+        variables: { word: word },
+      });
+      if ((existWord?.words?.length ?? 0) === 0) {
+        setWord(word);
+        setPronounce(kana);
+        setExplain(suggest_mean.split(";").filter(Boolean).join("; "));
+      } else {
+        const exist = existWord!.words![0];
+        setWord(word);
+        setPronounce(exist.pronounce);
+        setExplain(exist.explain);
+        setId(exist.id);
+        setTags(uniq([...existTags, ...(exist.tags?.map((t) => t.id!) ?? [])]));
+      }
       setOpen(false);
       setSearch(word);
     },
-    [setExplain, setPronounce, setWord]
+    [existTags, searchExist, setExplain, setId, setPronounce, setTags, setWord]
   );
 
   return (
-    <Popover
-      isLazy
-      isOpen={open && search.length > 0}
-      autoFocus={false}
-      placement="bottom"
-      closeOnBlur={true}
-    >
-      <chakra.div
-        sx={{
-          ".chakra-popover__popper": {
-            position: "unset !important",
-          },
-        }}
-        w="full"
+    <>
+      <Popover
+        isLazy
+        isOpen={open && search.length > 0}
+        autoFocus={false}
+        placement="bottom"
+        closeOnBlur={true}
       >
-        <Input
-          placeholder={"何の漢字"}
-          variant="filled"
-          value={search}
-          onChange={(e) => {
-            setOpen(true);
-            setSearch(e.target.value);
+        <chakra.div
+          sx={{
+            ".chakra-popover__popper": {
+              position: "unset !important",
+            },
           }}
-        />
-        <PopoverContent {...baseStyles}>
-          {rendered.map(({ word, kana, suggest_mean }, c_id) => (
-            <Flex
-              {...baseItemStyles}
-              key={c_id}
-              textTransform="capitalize"
-              onClick={() => onClick({ word, kana, suggest_mean })}
-            >
-              {word}&nbsp;&nbsp;&nbsp;
-              <span className="text-slate-400">{kana}</span>
-              &nbsp;&#183;&nbsp;
-              <span className="text-slate-600">{suggest_mean}</span>
-            </Flex>
-          ))}
-        </PopoverContent>
-      </chakra.div>
-    </Popover>
+          w="full"
+        >
+          <Input
+            placeholder={"何の漢字"}
+            variant="filled"
+            value={search}
+            onChange={(e) => {
+              setOpen(true);
+              setSearch(e.target.value);
+            }}
+          />
+          <PopoverContent {...baseStyles}>
+            {rendered.map(({ word, kana, suggest_mean }, c_id) => (
+              <Flex
+                {...baseItemStyles}
+                key={c_id}
+                textTransform="capitalize"
+                onClick={() => onClick({ word, kana, suggest_mean })}
+              >
+                {word}&nbsp;&nbsp;&nbsp;
+                <span className="text-slate-400">{kana}</span>
+                &nbsp;&#183;&nbsp;
+                <span className="text-slate-600">{suggest_mean}</span>
+              </Flex>
+            ))}
+          </PopoverContent>
+        </chakra.div>
+      </Popover>
+    </>
   );
 };
 
@@ -125,7 +147,7 @@ const ADD_NEW_WORD = gql`
 
 export default function AddNewWord() {
   const [show, setShow] = useState(false);
-
+  const { tags } = useContext(AdminContext);
   const onClick = () => setShow(true),
     onClose = () => setShow(false);
 
@@ -135,9 +157,14 @@ export default function AddNewWord() {
 
   return (
     <>
-      <Button colorScheme={"blue"} onClick={onClick}>
-        Thêm từ vựng
-      </Button>
+      <IconButton
+        colorScheme={"blue"}
+        onClick={onClick}
+        aria-label="Call Segun"
+        size="lg"
+        icon={<AddIcon />}
+        className={"fixed bottom-4 right-4 rounded-full"}
+      />
       <Modal isOpen={show} onClose={onClose} size={"3xl"}>
         <ModalOverlay />
         <ModalContent>
@@ -148,7 +175,7 @@ export default function AddNewWord() {
                 <SuggestFromJisho />
               </div>
             }
-            word={{ word: "", pronounce: "", explain: "", tags: [] }}
+            word={{ id: null, word: "", pronounce: "", explain: "", tags }}
             onSubmit={async (values: any) => {
               await mutate({ variables: { word: values } });
             }}

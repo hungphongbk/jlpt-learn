@@ -170,6 +170,7 @@ export type Word = {
 
 export type WordInsertInput = {
   explain: Scalars['String'];
+  id?: InputMaybe<Scalars['String']>;
   pronounce: Scalars['String'];
   tags?: InputMaybe<Array<Scalars['String']>>;
   word: Scalars['String'];
@@ -220,6 +221,13 @@ export type AdminGetAllWordQueryVariables = Exact<{
 
 
 export type AdminGetAllWordQuery = { __typename?: 'Query', words?: Array<{ __typename?: 'Word', id: string, word: string, pronounce: string, explain: string }> | null };
+
+export type AdminSearchWordQueryVariables = Exact<{
+  word: Scalars['String'];
+}>;
+
+
+export type AdminSearchWordQuery = { __typename?: 'Query', words?: Array<{ __typename?: 'Word', id: string, word: string, pronounce: string, explain: string, tags?: Array<{ __typename?: 'Tag', id: string }> | null, kanji?: Array<{ __typename?: 'Kanji', id: string, hv?: string | null }> | null }> | null };
 
 
 

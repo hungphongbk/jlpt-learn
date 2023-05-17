@@ -14,13 +14,15 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import { GET_ALL_WORD, QUERY_ALL_TAGS } from "@/src/components/gql";
-import { useEffect, useMemo } from "react";
+import React, { useContext, useEffect, useMemo } from "react";
 import {
   TreeExpandedKeys,
   TreeNode,
   TreeSelectionKeys,
 } from "@/src/components/common/tree/utils";
 import { Tree, useTree } from "@/src/components/common/tree";
+import AddNewWord from "@/src/components/admin/AddNewWord";
+import { AdminContext } from "@/app/admin/context";
 
 export default function TagsPage() {
   const { data } = useQuery(QUERY_ALL_TAGS);
@@ -76,9 +78,18 @@ export default function TagsPage() {
         },
       },
     },
+    skip: checkeds.length === 0,
   });
 
-  useEffect(() => console.log(selectionKeys), [selectionKeys]);
+  const { setTags } = useContext(AdminContext);
+  useEffect(() => {
+    return () => {
+      setTags([]);
+    };
+  }, [setTags]);
+  useEffect(() => {
+    setTags(checkeds);
+  }, [setTags, checkeds]);
 
   // const onSave = (): void => {
   //   console.log(
@@ -93,7 +104,8 @@ export default function TagsPage() {
       <Box w={"200px"} pr={2}>
         <Tree value={toNodes} />
       </Box>
-      <Stack mb={2} spacing={5} direction={"row"} flex={1}>
+      <Stack mb={2} spacing={5} direction={"column"} flex={1}>
+        <AddNewWord />
         <TableContainer>
           <Table variant="simple">
             <Thead>

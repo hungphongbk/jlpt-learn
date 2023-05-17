@@ -19,6 +19,7 @@ const documents = {
     "\n  mutation AdminUpsertOneKanji($id: String!, $kanji: KanjiUpsertInput!) {\n    upsertKanji(id: $id, kanji: $kanji) {\n      id\n      hv\n    }\n  }\n": types.AdminUpsertOneKanjiDocument,
     "\n  query AdminAllTags {\n    tags {\n      id\n      label\n      children {\n        id\n        label\n      }\n    }\n  }\n": types.AdminAllTagsDocument,
     "\n  query AdminGetAllWord($where: WordQueryInput) {\n    words(where: $where) {\n      id\n      word\n      pronounce\n      explain\n    }\n  }\n": types.AdminGetAllWordDocument,
+    "\n  query AdminSearchWord($word: String!) {\n    words(where: { word: { eq: $word } }) {\n      id\n      word\n      pronounce\n      explain\n      tags {\n        id\n      }\n      kanji {\n        id\n        hv\n      }\n    }\n  }\n": types.AdminSearchWordDocument,
 };
 
 /**
@@ -59,6 +60,10 @@ export function graphql(source: "\n  query AdminAllTags {\n    tags {\n      id\
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query AdminGetAllWord($where: WordQueryInput) {\n    words(where: $where) {\n      id\n      word\n      pronounce\n      explain\n    }\n  }\n"): (typeof documents)["\n  query AdminGetAllWord($where: WordQueryInput) {\n    words(where: $where) {\n      id\n      word\n      pronounce\n      explain\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query AdminSearchWord($word: String!) {\n    words(where: { word: { eq: $word } }) {\n      id\n      word\n      pronounce\n      explain\n      tags {\n        id\n      }\n      kanji {\n        id\n        hv\n      }\n    }\n  }\n"): (typeof documents)["\n  query AdminSearchWord($word: String!) {\n    words(where: { word: { eq: $word } }) {\n      id\n      word\n      pronounce\n      explain\n      tags {\n        id\n      }\n      kanji {\n        id\n        hv\n      }\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

@@ -11,6 +11,9 @@ export const queryWords: QueryResolvers["words"] = async (
   let ref: firestore.Query<firestore.DocumentData> = firestore.collection(
     FirestoreCollections.Vocabulary
   );
+  if (where?.word?.eq) {
+    ref = ref.where("word", "==", where.word.eq!);
+  }
   if (where?.tags?.arrayContainsAny) {
     ref = ref.where(
       "tags",

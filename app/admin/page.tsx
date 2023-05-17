@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import AddNewWord from "@/src/components/admin/AddNewWord";
 import {
   Box,
   CardHeader,
@@ -22,7 +21,6 @@ function Page() {
     <>
       <div className={"h-screen p-3"}>
         <HStack spacing={2} mb={4}>
-          <AddNewWord />
           <BatchImport />
         </HStack>
         <SimpleGrid columns={{ base: 2, md: 4, lg: 6, xl: 8 }} spacing={2}>
