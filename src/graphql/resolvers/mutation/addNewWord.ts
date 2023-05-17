@@ -1,15 +1,15 @@
-import { FirestoreCollections, KANJI_REGEX } from "@/src/const";
+import { KANJI_REGEX } from "@/src/const";
 import { MutationResolvers } from "@/types";
 import { FieldValue } from "firebase-admin/firestore";
 
 const addNewWord: MutationResolvers["addNewWord"] = async (
   _: any,
   { word: { id: existId, tags: _tags = [], ...word } },
-  { firestore, fsCollection }
+  { cache, fsCollection }
 ) => {
   const kanji = await word.word.split("").reduce(async (acc, val) => {
     if (KANJI_REGEX.test(val)) {
-      let kanjiRef = firestore.collection(FirestoreCollections.Kanji).doc(val);
+      let kanjiRef = fsCollection("kanji").doc(val);
       const kanjiDoc = await kanjiRef.get();
       if (!kanjiDoc.exists) {
         await kanjiRef.set({ hv: "" });
@@ -18,9 +18,7 @@ const addNewWord: MutationResolvers["addNewWord"] = async (
     }
     return await acc;
   }, Promise.resolve([] as string[]));
-  const tags = _tags!.map((id) =>
-    firestore.collection(FirestoreCollections.Tag).doc(id)
-  );
+  const tags = _tags!.map((id) => fsCollection("tag").doc(id));
   if (existId) {
     await fsCollection("vocabulary")
       .doc(existId)
@@ -28,21 +26,20 @@ const addNewWord: MutationResolvers["addNewWord"] = async (
         ...word,
         tags: FieldValue.arrayUnion(...tags),
       });
-
+    await cache.invalidate([{ typename: "Word" }]);
     return {
       id: existId,
       tags,
       ...word,
     };
   } else {
-    const result = await firestore
-      .collection(FirestoreCollections.Vocabulary)
-      .add({
-        ...word,
-        kanji,
-        tags,
-        createdAt: Date(),
-      });
+    const result = await fsCollection("vocabulary").add({
+      ...word,
+      kanji,
+      tags,
+      createdAt: Date(),
+    });
+    await cache.invalidate([{ typename: "Word" }]);
     return {
       id: result!.id,
       tags,

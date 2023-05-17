@@ -13,7 +13,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-    "\n  query AdminSearchFromJDict($word: String!) {\n    jdictSearchWord(word: $word) {\n      data {\n        id\n        word\n        kana\n        suggest_mean\n      }\n    }\n  }\n": types.AdminSearchFromJDictDocument,
+    "\n  query AdminSearchFromJDict($word: String!) {\n    jdictSearchWord(word: $word) {\n      data {\n        id\n        word\n        kana\n        suggest_mean\n        kanjis {\n          id\n          kanji\n          hanviet\n        }\n      }\n    }\n  }\n": types.AdminSearchFromJDictDocument,
     "\n  mutation AddNewWord($word: WordInsertInput!) {\n    addNewWord(word: $word) {\n      id\n    }\n  }\n": types.AddNewWordDocument,
     "\n  query AdminGetOneKanji($id: String!) {\n    kanji(id: $id) {\n      id\n      hv\n    }\n  }\n": types.AdminGetOneKanjiDocument,
     "\n  mutation AdminUpsertOneKanji($id: String!, $kanji: KanjiUpsertInput!) {\n    upsertKanji(id: $id, kanji: $kanji) {\n      id\n      hv\n    }\n  }\n": types.AdminUpsertOneKanjiDocument,
@@ -39,7 +39,7 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query AdminSearchFromJDict($word: String!) {\n    jdictSearchWord(word: $word) {\n      data {\n        id\n        word\n        kana\n        suggest_mean\n      }\n    }\n  }\n"): (typeof documents)["\n  query AdminSearchFromJDict($word: String!) {\n    jdictSearchWord(word: $word) {\n      data {\n        id\n        word\n        kana\n        suggest_mean\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query AdminSearchFromJDict($word: String!) {\n    jdictSearchWord(word: $word) {\n      data {\n        id\n        word\n        kana\n        suggest_mean\n        kanjis {\n          id\n          kanji\n          hanviet\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query AdminSearchFromJDict($word: String!) {\n    jdictSearchWord(word: $word) {\n      data {\n        id\n        word\n        kana\n        suggest_mean\n        kanjis {\n          id\n          kanji\n          hanviet\n        }\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

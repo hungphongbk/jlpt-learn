@@ -11,11 +11,18 @@ import { mergeTypeDefs } from "@graphql-tools/merge";
 import JishoAPI from "@/lib/jisho-dict";
 import JDictAPI from "@/lib/jdict";
 import { useResponseCache } from "@graphql-yoga/plugin-response-cache";
-import { createRedisCache } from "./utils/redis-kv";
+import IORedis from "ioredis";
+import { createRedisCache } from "@envelop/response-cache-redis";
 import CollectionReference = admin.firestore.CollectionReference;
 import DocumentData = admin.firestore.DocumentData;
 
-const cache = createRedisCache({});
+const redis = new IORedis({
+  password: process.env.REDIS_PASSWORD!.trim(),
+  host: process.env.REDIS_HOST!.trim(),
+  port: Number(process.env.REDIS_PORT!.trim()),
+});
+
+const cache = createRedisCache({ redis });
 
 type Docs = "vocabulary" | "kanji" | "tag";
 
@@ -24,6 +31,7 @@ export interface GraphQLContext extends YogaInitialContext {
   fsCollection: (docName: Docs) => CollectionReference<DocumentData>;
   jisho: JishoAPI;
   jdict: typeof JDictAPI;
+  cache: typeof cache;
 }
 
 const typeDefs = mergeTypeDefs([mainTypeDefs, typeDefs$1, typeDefs$2]);
@@ -41,6 +49,7 @@ const graphqlServer = createYoga({
       fsCollection: (doc: Docs) => firestore.collection(doc),
       jisho: new JishoAPI(),
       jdict: JDictAPI,
+      cache,
     };
   },
   graphqlEndpoint: "/api/graphql",

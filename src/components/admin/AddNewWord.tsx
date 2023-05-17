@@ -13,18 +13,11 @@ import {
   PopoverContent,
   PopoverContentProps,
 } from "@chakra-ui/react";
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { gql, useLazyQuery, useMutation } from "@apollo/client";
 import SingleWordFormModalContent from "@/src/components/admin/SingleWordFormModalContent";
 import { useField } from "formik";
-import { debounce, flatten } from "lodash";
+import { flatten } from "lodash";
 import { graphql } from "@/src/graphql-client/gql";
 import { AddIcon } from "@chakra-ui/icons";
 import { AdminContext } from "@/app/admin/context";
@@ -39,6 +32,11 @@ const SUGGEST_FROM_JDICT = graphql(`
         word
         kana
         suggest_mean
+        kanjis {
+          id
+          kanji
+          hanviet
+        }
       }
     }
   }
@@ -59,13 +57,10 @@ const SuggestFromJisho = () => {
     return flatten(data?.jdictSearchWord?.data ?? []);
   }, [data]);
 
-  const deboucedFetch = useRef(
-    debounce((word) => fetch({ variables: { word } }), 500)
-  );
-
-  useEffect(() => {
-    if (search.length > 0 && open) deboucedFetch.current(search);
-  }, [search, fetch, open]);
+  const doSearch = () => {
+    setOpen(true);
+    fetch({ variables: { word: search } });
+  };
 
   const onClick = useCallback(
     async ({ word, kana, suggest_mean }: any) => {
@@ -112,8 +107,12 @@ const SuggestFromJisho = () => {
             variant="filled"
             value={search}
             onChange={(e) => {
-              setOpen(true);
               setSearch(e.target.value);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                doSearch();
+              }
             }}
           />
           <PopoverContent {...baseStyles}>
@@ -124,8 +123,9 @@ const SuggestFromJisho = () => {
                 textTransform="capitalize"
                 onClick={() => onClick({ word, kana, suggest_mean })}
               >
-                {word}&nbsp;&nbsp;&nbsp;
-                <span className="text-slate-400">{kana}</span>
+                <span className={"whitespace-nowrap"}>{word}</span>
+                &nbsp;&nbsp;&nbsp;
+                <span className="text-slate-400 whitespace-nowrap">{kana}</span>
                 &nbsp;&#183;&nbsp;
                 <span className="text-slate-600">{suggest_mean}</span>
               </Flex>
@@ -200,7 +200,7 @@ const baseStyles: PopoverContentProps = {
   pos: "absolute",
   zIndex: "popover",
   overflowY: "auto",
-
+  width: "var(--chakra-sizes-lg)",
   _light: {
     bg: "#ffffff",
   },

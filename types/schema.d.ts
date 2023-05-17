@@ -186,7 +186,7 @@ export type AdminSearchFromJDictQueryVariables = Exact<{
 }>;
 
 
-export type AdminSearchFromJDictQuery = { __typename?: 'Query', jdictSearchWord: { __typename?: 'JDictAPIResult', data: Array<{ __typename?: 'JDictWord', id: number, word: string, kana: string, suggest_mean: string }> } };
+export type AdminSearchFromJDictQuery = { __typename?: 'Query', jdictSearchWord: { __typename?: 'JDictAPIResult', data: Array<{ __typename?: 'JDictWord', id: number, word: string, kana: string, suggest_mean: string, kanjis: Array<{ __typename?: 'JDictKanji', id: number, kanji: string, hanviet: string }> }> } };
 
 export type AddNewWordMutationVariables = Exact<{
   word: WordInsertInput;

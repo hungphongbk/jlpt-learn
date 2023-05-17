@@ -4,10 +4,11 @@ import { FirestoreCollections } from "@/src/const";
 export const upsertKanji: MutationResolvers["upsertKanji"] = async (
   _,
   { id, kanji },
-  { firestore }
+  { firestore, cache }
 ) => {
   let kanjiRef = firestore.collection(FirestoreCollections.Kanji).doc(id);
   await kanjiRef.set(kanji);
+  await cache.invalidate([{ typename: "Kanji", id }]);
 
   return { id, ...(await kanjiRef.get()).data() };
 };
