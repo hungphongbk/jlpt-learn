@@ -21,8 +21,8 @@ import { flatten } from "lodash";
 import { graphql } from "@/src/graphql-client/gql";
 import { AddIcon } from "@chakra-ui/icons";
 import { AdminContext } from "@/app/admin/context";
-import { SEARCH_WORD } from "@/src/components/gql";
 import { uniq } from "ramda";
+import clsx from "clsx";
 
 const SUGGEST_FROM_JDICT = graphql(`
   query AdminSearchFromJDict($word: String!) {
@@ -32,6 +32,15 @@ const SUGGEST_FROM_JDICT = graphql(`
         word
         kana
         suggest_mean
+        isExist {
+          id
+          word
+          pronounce
+          explain
+          tags {
+            id
+          }
+        }
         kanjis {
           id
           kanji
@@ -46,12 +55,12 @@ const SuggestFromJisho = () => {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [fetch, { data }] = useLazyQuery(SUGGEST_FROM_JDICT);
-  const [searchExist] = useLazyQuery(SEARCH_WORD);
-  const [_1, _2, { setValue: setWord }] = useField("word");
-  const [_3, _4, { setValue: setPronounce }] = useField("pronounce");
-  const [_5, _6, { setValue: setExplain }] = useField("explain");
-  const [_7, _8, { setValue: setId }] = useField("id");
-  const [{ value: existTags }, _0, { setValue: setTags }] = useField("tags");
+  const [, , { setValue: setWord }] = useField("word");
+  const [, , { setValue: setPronounce }] = useField("pronounce");
+  const [, , { setValue: setExplain }] = useField("explain");
+  const [, , { setValue: setId }] = useField("id");
+  const [{ value: existTags }, , { setValue: setTags }] = useField("tags");
+  const [, , { setValue: setKanji }] = useField("kanji");
 
   const rendered = useMemo(() => {
     return flatten(data?.jdictSearchWord?.data ?? []);
@@ -63,26 +72,26 @@ const SuggestFromJisho = () => {
   };
 
   const onClick = useCallback(
-    async ({ word, kana, suggest_mean }: any) => {
-      const { data: existWord } = await searchExist({
-        variables: { word: word },
-      });
-      if ((existWord?.words?.length ?? 0) === 0) {
+    async ({ word, kana, suggest_mean, kanjis, isExist }: any) => {
+      if (!isExist) {
         setWord(word);
         setPronounce(kana);
         setExplain(suggest_mean.split(";").filter(Boolean).join("; "));
+        setKanji(kanjis.map((k: any) => ({ id: k.kanji, hv: k.hanviet })));
       } else {
-        const exist = existWord!.words![0];
+        const exist = isExist;
         setWord(word);
         setPronounce(exist.pronounce);
         setExplain(exist.explain);
         setId(exist.id);
-        setTags(uniq([...existTags, ...(exist.tags?.map((t) => t.id!) ?? [])]));
+        setTags(
+          uniq([...existTags, ...(exist.tags?.map((t: any) => t.id!) ?? [])])
+        );
       }
       setOpen(false);
       setSearch(word);
     },
-    [existTags, searchExist, setExplain, setId, setPronounce, setTags, setWord]
+    [existTags, setExplain, setId, setKanji, setPronounce, setTags, setWord]
   );
 
   return (
@@ -116,18 +125,21 @@ const SuggestFromJisho = () => {
             }}
           />
           <PopoverContent {...baseStyles}>
-            {rendered.map(({ word, kana, suggest_mean }, c_id) => (
+            {rendered.map((item, c_id) => (
               <Flex
                 {...baseItemStyles}
                 key={c_id}
                 textTransform="capitalize"
-                onClick={() => onClick({ word, kana, suggest_mean })}
+                onClick={() => onClick(item!)}
+                className={clsx(item.isExist && "bg-emerald-100")}
               >
-                <span className={"whitespace-nowrap"}>{word}</span>
+                <span className={"whitespace-nowrap"}>{item.word}</span>
                 &nbsp;&nbsp;&nbsp;
-                <span className="text-slate-400 whitespace-nowrap">{kana}</span>
+                <span className="text-slate-400 whitespace-nowrap">
+                  {item.kana}
+                </span>
                 &nbsp;&#183;&nbsp;
-                <span className="text-slate-600">{suggest_mean}</span>
+                <span className="text-slate-600">{item.suggest_mean}</span>
               </Flex>
             ))}
           </PopoverContent>
@@ -175,7 +187,14 @@ export default function AddNewWord() {
                 <SuggestFromJisho />
               </div>
             }
-            word={{ id: null, word: "", pronounce: "", explain: "", tags }}
+            word={{
+              id: null,
+              word: "",
+              pronounce: "",
+              explain: "",
+              tags,
+              kanji: null,
+            }}
             onSubmit={async (values: any) => {
               await mutate({ variables: { word: values } });
             }}

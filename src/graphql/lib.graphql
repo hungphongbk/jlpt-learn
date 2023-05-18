@@ -21,6 +21,7 @@ type JDictWord{
   kana:String!
   suggest_mean:String!
   kanjis: [JDictKanji!]!
+  isExist:Word
 }
 type JDictAPIResult{
   data:[JDictWord!]!

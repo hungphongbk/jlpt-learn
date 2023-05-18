@@ -15,6 +15,7 @@ import {
   queryTags,
 } from "@/src/graphql/resolvers/query/tags";
 import {
+  JDictWord_queryIsExist,
   queryJDictSearchWord,
   queryJishoSearchWord,
 } from "@/src/graphql/resolvers/query/lib";
@@ -40,5 +41,8 @@ export default {
   },
   Tag: {
     children: queryChildrenTags,
+  },
+  JDictWord: {
+    isExist: JDictWord_queryIsExist,
   },
 } as IResolvers;

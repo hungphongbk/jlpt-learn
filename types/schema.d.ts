@@ -34,6 +34,7 @@ export type JDictKanji = {
 export type JDictWord = {
   __typename?: 'JDictWord';
   id: Scalars['Int'];
+  isExist?: Maybe<Word>;
   kana: Scalars['String'];
   kanjis: Array<JDictKanji>;
   slug: Scalars['String'];
@@ -186,7 +187,7 @@ export type AdminSearchFromJDictQueryVariables = Exact<{
 }>;
 
 
-export type AdminSearchFromJDictQuery = { __typename?: 'Query', jdictSearchWord: { __typename?: 'JDictAPIResult', data: Array<{ __typename?: 'JDictWord', id: number, word: string, kana: string, suggest_mean: string, kanjis: Array<{ __typename?: 'JDictKanji', id: number, kanji: string, hanviet: string }> }> } };
+export type AdminSearchFromJDictQuery = { __typename?: 'Query', jdictSearchWord: { __typename?: 'JDictAPIResult', data: Array<{ __typename?: 'JDictWord', id: number, word: string, kana: string, suggest_mean: string, isExist?: { __typename?: 'Word', id: string, word: string, pronounce: string, explain: string, tags?: Array<{ __typename?: 'Tag', id: string }> | null } | null, kanjis: Array<{ __typename?: 'JDictKanji', id: number, kanji: string, hanviet: string }> }> } };
 
 export type AddNewWordMutationVariables = Exact<{
   word: WordInsertInput;
@@ -364,6 +365,7 @@ export type JDictKanjiResolvers<ContextType = GraphQLContext, ParentType extends
 
 export type JDictWordResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['JDictWord'] = ResolversParentTypes['JDictWord']> = {
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  isExist?: Resolver<Maybe<ResolversTypes['Word']>, ParentType, ContextType>;
   kana?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   kanjis?: Resolver<Array<ResolversTypes['JDictKanji']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
