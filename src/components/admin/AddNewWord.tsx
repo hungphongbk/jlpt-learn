@@ -12,8 +12,15 @@ import {
   Popover,
   PopoverContent,
   PopoverContentProps,
+  Tag,
 } from "@chakra-ui/react";
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { gql, useLazyQuery, useMutation } from "@apollo/client";
 import SingleWordFormModalContent from "@/src/components/admin/SingleWordFormModalContent";
 import { useField } from "formik";
@@ -21,8 +28,9 @@ import { flatten } from "lodash";
 import { graphql } from "@/src/graphql-client/gql";
 import { AddIcon } from "@chakra-ui/icons";
 import { AdminContext } from "@/app/admin/context";
-import { uniq } from "ramda";
 import clsx from "clsx";
+import useArrayField from "@/src/components/common/useArrayField";
+import { AdminSearchFromJDictQuery } from "@/src/graphql-client/graphql";
 
 const SUGGEST_FROM_JDICT = graphql(`
   query AdminSearchFromJDict($word: String!) {
@@ -45,13 +53,20 @@ const SUGGEST_FROM_JDICT = graphql(`
           id
           kanji
           hanviet
+          isExist {
+            id
+            hv
+          }
         }
+        level
       }
     }
   }
 `);
 
-const SuggestFromJisho = () => {
+type JDictData = AdminSearchFromJDictQuery["jdictSearchWord"]["data"][number];
+
+const SuggestFromJdict = () => {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [fetch, { data }] = useLazyQuery(SUGGEST_FROM_JDICT);
@@ -59,7 +74,8 @@ const SuggestFromJisho = () => {
   const [, , { setValue: setPronounce }] = useField("pronounce");
   const [, , { setValue: setExplain }] = useField("explain");
   const [, , { setValue: setId }] = useField("id");
-  const [{ value: existTags }, , { setValue: setTags }] = useField("tags");
+  const [{ value: existTags }, , { setArrayValue: setTags }] =
+    useArrayField("tags");
   const [, , { setValue: setKanji }] = useField("kanji");
 
   const rendered = useMemo(() => {
@@ -71,28 +87,46 @@ const SuggestFromJisho = () => {
     fetch({ variables: { word: search } });
   };
 
-  const onClick = useCallback(
-    async ({ word, kana, suggest_mean, kanjis, isExist }: any) => {
+  const [selected, setSelected] = useState<JDictData | null>(null);
+
+  useEffect(() => {
+    if (selected) {
+      const { word, kana, suggest_mean, kanjis, isExist } = selected;
       if (!isExist) {
         setWord(word);
         setPronounce(kana);
-        setExplain(suggest_mean.split(";").filter(Boolean).join("; "));
-        setKanji(kanjis.map((k: any) => ({ id: k.kanji, hv: k.hanviet })));
+        setExplain(
+          suggest_mean
+            .split(";")
+            .filter(Boolean)
+            .map((s) => s.trim())
+            .join("; ")
+        );
+        setKanji(
+          kanjis.map((k: any) => ({
+            id: k.isExist?.id ?? k.kanji,
+            hv: k.isExist?.hv ?? k.hanviet,
+            isExist: Boolean(k.isExist),
+          }))
+        );
       } else {
         const exist = isExist;
         setWord(word);
         setPronounce(exist.pronounce);
         setExplain(exist.explain);
         setId(exist.id);
-        setTags(
-          uniq([...existTags, ...(exist.tags?.map((t: any) => t.id!) ?? [])])
-        );
+        setTags({
+          add: exist.tags?.map((t: any) => t.id!) ?? [],
+        });
       }
-      setOpen(false);
-      setSearch(word);
-    },
-    [existTags, setExplain, setId, setKanji, setPronounce, setTags, setWord]
-  );
+    }
+  }, [selected]);
+
+  const onClick = useCallback(async (jdictData: JDictData) => {
+    setSelected(jdictData);
+    setOpen(false);
+    setSearch(jdictData.word);
+  }, []);
 
   return (
     <>
@@ -124,6 +158,11 @@ const SuggestFromJisho = () => {
               }
             }}
           />
+          {selected?.level && (
+            <div className={"mt-2"}>
+              <Tag>{selected.level.name}</Tag>
+            </div>
+          )}
           <PopoverContent {...baseStyles}>
             {rendered.map((item, c_id) => (
               <Flex
@@ -184,7 +223,7 @@ export default function AddNewWord() {
             modalTitle={
               <div className={"flex gap-4 items-center"}>
                 <h3 className={"flex-none"}>Thêm từ vựng</h3>
-                <SuggestFromJisho />
+                <SuggestFromJdict />
               </div>
             }
             word={{
@@ -196,6 +235,7 @@ export default function AddNewWord() {
               kanji: null,
             }}
             onSubmit={async (values: any) => {
+              delete values.kanji;
               await mutate({ variables: { word: values } });
             }}
             afterSubmit={onClose}

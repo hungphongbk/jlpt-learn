@@ -1,28 +1,31 @@
+scalar JSON
+scalar JSONObject
+
 input StringComparator{
-  eq:String
-  neq:String
-  in:[String!]
-  notIn:[String!]
+    eq:String
+    neq:String
+    in:[String!]
+    notIn:[String!]
 }
 input ArrayStringComparator{
-  arrayContainsAny:[String!]
+    arrayContainsAny:[String!]
 }
 
 type Query{
-  words(where: WordQueryInput, limit: Int):[Word!]
-  word(id:String!):Word!
-  kanji(id:String!):Kanji!
-  tags:[Tag!]
-  jishoSearchWord(word: String!):JishoAPIResult!
-  jdictSearchWord(word: String!):JDictAPIResult!
+    words(where: WordQueryInput, limit: Int):[Word!]
+    word(id:String!):Word!
+    kanji(id:String!):Kanji!
+    tags:[Tag!]
+    jishoSearchWord(word: String!):JishoAPIResult!
+    jdictSearchWord(word: String!):JDictAPIResult!
 }
 type Mutation{
-  addNewWord(word:WordInsertInput!):Word!
-  upsertKanji(id:String!, kanji:KanjiUpsertInput!):Kanji!
-  upsertKanjis(kanjis: [KanjiUpsertInputPair!]!):Boolean!
-  upsertTag(tag:TagUpsertInput!):Tag!
+    addNewWord(word:WordInsertInput!):Word!
+    upsertKanji(id:String!, kanji:KanjiUpsertInput!):Kanji!
+    upsertKanjis(kanjis: [KanjiUpsertInputPair!]!):Boolean!
+    upsertTag(tag:TagUpsertInput!):Tag!
 }
 schema{
-  query: Query
-  mutation: Mutation
+    query: Query
+    mutation: Mutation
 }

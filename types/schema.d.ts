@@ -1,4 +1,4 @@
-import { GraphQLResolveInfo } from 'graphql';
+import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { GraphQLContext } from '../src/graphql/graphql';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -13,6 +13,8 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  JSON: Record<string,any>;
+  JSONObject: Record<string,any>;
 };
 
 export type ArrayStringComparator = {
@@ -28,6 +30,7 @@ export type JDictKanji = {
   __typename?: 'JDictKanji';
   hanviet: Scalars['String'];
   id: Scalars['Int'];
+  isExist?: Maybe<Kanji>;
   kanji: Scalars['String'];
 };
 
@@ -37,6 +40,7 @@ export type JDictWord = {
   isExist?: Maybe<Word>;
   kana: Scalars['String'];
   kanjis: Array<JDictKanji>;
+  level?: Maybe<Scalars['JSONObject']>;
   slug: Scalars['String'];
   suggest_mean: Scalars['String'];
   word: Scalars['String'];
@@ -187,7 +191,7 @@ export type AdminSearchFromJDictQueryVariables = Exact<{
 }>;
 
 
-export type AdminSearchFromJDictQuery = { __typename?: 'Query', jdictSearchWord: { __typename?: 'JDictAPIResult', data: Array<{ __typename?: 'JDictWord', id: number, word: string, kana: string, suggest_mean: string, isExist?: { __typename?: 'Word', id: string, word: string, pronounce: string, explain: string, tags?: Array<{ __typename?: 'Tag', id: string }> | null } | null, kanjis: Array<{ __typename?: 'JDictKanji', id: number, kanji: string, hanviet: string }> }> } };
+export type AdminSearchFromJDictQuery = { __typename?: 'Query', jdictSearchWord: { __typename?: 'JDictAPIResult', data: Array<{ __typename?: 'JDictWord', id: number, word: string, kana: string, suggest_mean: string, level?: Record<string,any> | null, isExist?: { __typename?: 'Word', id: string, word: string, pronounce: string, explain: string, tags?: Array<{ __typename?: 'Tag', id: string }> | null } | null, kanjis: Array<{ __typename?: 'JDictKanji', id: number, kanji: string, hanviet: string, isExist?: { __typename?: 'Kanji', id: string, hv?: string | null } | null }> }> } };
 
 export type AddNewWordMutationVariables = Exact<{
   word: WordInsertInput;
@@ -308,6 +312,8 @@ export type ResolversTypes = {
   JDictAPIResult: ResolverTypeWrapper<JDictApiResult>;
   JDictKanji: ResolverTypeWrapper<JDictKanji>;
   JDictWord: ResolverTypeWrapper<JDictWord>;
+  JSON: ResolverTypeWrapper<Scalars['JSON']>;
+  JSONObject: ResolverTypeWrapper<Scalars['JSONObject']>;
   JishoAPIResult: ResolverTypeWrapper<JishoApiResult>;
   JishoJapaneseWord: ResolverTypeWrapper<JishoJapaneseWord>;
   JishoResult: ResolverTypeWrapper<JishoResult>;
@@ -334,6 +340,8 @@ export type ResolversParentTypes = {
   JDictAPIResult: JDictApiResult;
   JDictKanji: JDictKanji;
   JDictWord: JDictWord;
+  JSON: Scalars['JSON'];
+  JSONObject: Scalars['JSONObject'];
   JishoAPIResult: JishoApiResult;
   JishoJapaneseWord: JishoJapaneseWord;
   JishoResult: JishoResult;
@@ -359,6 +367,7 @@ export type JDictApiResultResolvers<ContextType = GraphQLContext, ParentType ext
 export type JDictKanjiResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['JDictKanji'] = ResolversParentTypes['JDictKanji']> = {
   hanviet?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  isExist?: Resolver<Maybe<ResolversTypes['Kanji']>, ParentType, ContextType>;
   kanji?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -368,11 +377,20 @@ export type JDictWordResolvers<ContextType = GraphQLContext, ParentType extends 
   isExist?: Resolver<Maybe<ResolversTypes['Word']>, ParentType, ContextType>;
   kana?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   kanjis?: Resolver<Array<ResolversTypes['JDictKanji']>, ParentType, ContextType>;
+  level?: Resolver<Maybe<ResolversTypes['JSONObject']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   suggest_mean?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   word?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
+
+export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
+  name: 'JSON';
+}
+
+export interface JsonObjectScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSONObject'], any> {
+  name: 'JSONObject';
+}
 
 export type JishoApiResultResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['JishoAPIResult'] = ResolversParentTypes['JishoAPIResult']> = {
   data?: Resolver<Array<ResolversTypes['JishoResult']>, ParentType, ContextType>;
@@ -434,6 +452,8 @@ export type Resolvers<ContextType = GraphQLContext> = {
   JDictAPIResult?: JDictApiResultResolvers<ContextType>;
   JDictKanji?: JDictKanjiResolvers<ContextType>;
   JDictWord?: JDictWordResolvers<ContextType>;
+  JSON?: GraphQLScalarType;
+  JSONObject?: GraphQLScalarType;
   JishoAPIResult?: JishoApiResultResolvers<ContextType>;
   JishoJapaneseWord?: JishoJapaneseWordResolvers<ContextType>;
   JishoResult?: JishoResultResolvers<ContextType>;

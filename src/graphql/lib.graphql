@@ -1,28 +1,31 @@
 type JishoJapaneseWord{
-  word:String
-  reading:String
+    word:String
+    reading:String
 }
 type JishoResult{
-  japanese:[JishoJapaneseWord!]!
+    japanese:[JishoJapaneseWord!]!
 }
 type JishoAPIResult{
-  data:[JishoResult!]!
+    data:[JishoResult!]!
 }
 
 type JDictKanji{
-  id:Int!
-  kanji: String!
-  hanviet: String!
+    id:Int!
+    kanji: String!
+    hanviet: String!
+    isExist:Kanji
 }
 type JDictWord{
-  id:Int!
-  slug:String!
-  word:String!
-  kana:String!
-  suggest_mean:String!
-  kanjis: [JDictKanji!]!
-  isExist:Word
+    id:Int!
+    slug:String!
+    word:String!
+    kana:String!
+    suggest_mean:String!
+    kanjis: [JDictKanji!]!
+    level:JSONObject
+
+    isExist:Word
 }
 type JDictAPIResult{
-  data:[JDictWord!]!
+    data:[JDictWord!]!
 }

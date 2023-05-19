@@ -15,13 +15,17 @@ import {
   queryTags,
 } from "@/src/graphql/resolvers/query/tags";
 import {
+  JDictKanji_queryIsExist,
   JDictWord_queryIsExist,
   queryJDictSearchWord,
   queryJishoSearchWord,
 } from "@/src/graphql/resolvers/query/lib";
 import { upsertTag } from "@/src/graphql/resolvers/mutation/upsertTag";
+import { JSONObjectResolver, JSONResolver } from "graphql-scalars";
 
 export default {
+  JSON: JSONResolver,
+  JSONObject: JSONObjectResolver,
   Mutation: {
     addNewWord,
     upsertKanji,
@@ -44,5 +48,8 @@ export default {
   },
   JDictWord: {
     isExist: JDictWord_queryIsExist,
+  },
+  JDictKanji: {
+    isExist: JDictKanji_queryIsExist,
   },
 } as IResolvers;

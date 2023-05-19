@@ -8,9 +8,16 @@ generates:
   ./types/schema.d.ts:
     config:
       contextType: ../src/graphql/graphql#GraphQLContext
+      scalars:
+        JSON: Record<string,any>
+        JSONObject: Record<string,any>
     plugins:
       - typescript
       - typescript-operations
       - typescript-resolvers
   ./src/graphql-client/:
     preset: 'client'
+    config:
+      scalars:
+        JSON: Record<string,any>
+        JSONObject: Record<string,any>
