@@ -1,47 +1,48 @@
 type Tag{
-  id:String!
-  label:String!
-  children:[Tag!]
-  parent:Tag
+    id:String!
+    label:String!
+    children:[Tag!]
+    parent:Tag
 }
 input TagUpsertInput{
-  id:String!
-  label:String
-  parentId:String
+    id:String!
+    label:String
+    parentId:String
 }
 
 type Kanji{
-  id:String!
-  hv:String
+    id:String!
+    hv:String
 }
 
 #type WordMetadata{
 #  jdict:JDictWord
 #}
 type Word{
-  id: ID!
-  word:String!
-  pronounce:String!
-  tags:[Tag!]
-  kanji:[Kanji!]
-  explain:String!
-  #  metadata:WordMetadata
+    id: ID!
+    word:String!
+    pronounce:String!
+    tags:[Tag!]
+    kanji:[Kanji!]
+    explain:String!
+    opposite:[Word!]
+    #  metadata:WordMetadata
 }
 input WordInsertInput{
-  id:String
-  word:String!
-  pronounce:String!
-  tags:[String!]
-  explain:String!
+    id:String
+    word:String!
+    pronounce:String!
+    tags:[String!]
+    explain:String!
 }
 input WordQueryInput{
-  word:StringComparator
-  tags:ArrayStringComparator
+    word:StringComparator
+    tags:ArrayStringComparator
 }
 input KanjiUpsertInput{
-  hv:String!
+    hv:String!
 }
 input KanjiUpsertInputPair{
-  id:String!
-  hv:String!
+    id:String!
+    hv:String!
 }

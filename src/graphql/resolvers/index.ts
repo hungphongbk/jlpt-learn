@@ -1,8 +1,11 @@
-import addNewWord from "@/src/graphql/resolvers/mutation/addNewWord";
+import addNewWord, {
+  setOppositeWord,
+} from "@/src/graphql/resolvers/mutation/addNewWord";
 import { IResolvers } from "@graphql-tools/utils";
 import {
   queryKanjiInWord,
   queryOneWord,
+  queryOppositesInWord,
   queryWords,
 } from "@/src/graphql/resolvers/query/words";
 import { queryOneKanji } from "@/src/graphql/resolvers/query/kanji";
@@ -31,6 +34,7 @@ export default {
     upsertKanji,
     upsertKanjis,
     upsertTag,
+    setOppositeWord,
   },
   Query: {
     words: queryWords,
@@ -42,6 +46,7 @@ export default {
   },
   Word: {
     kanji: queryKanjiInWord,
+    opposite: queryOppositesInWord,
   },
   Tag: {
     children: queryChildrenTags,

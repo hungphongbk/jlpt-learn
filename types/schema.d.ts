@@ -80,6 +80,7 @@ export type KanjiUpsertInputPair = {
 export type Mutation = {
   __typename?: 'Mutation';
   addNewWord: Word;
+  setOppositeWord: Word;
   upsertKanji: Kanji;
   upsertKanjis: Scalars['Boolean'];
   upsertTag: Tag;
@@ -88,6 +89,12 @@ export type Mutation = {
 
 export type MutationAddNewWordArgs = {
   word: WordInsertInput;
+};
+
+
+export type MutationSetOppositeWordArgs = {
+  oppositeWordId: Scalars['String'];
+  wordID: Scalars['String'];
 };
 
 
@@ -168,6 +175,7 @@ export type Word = {
   explain: Scalars['String'];
   id: Scalars['ID'];
   kanji?: Maybe<Array<Kanji>>;
+  opposite?: Maybe<Array<Word>>;
   pronounce: Scalars['String'];
   tags?: Maybe<Array<Tag>>;
   word: Scalars['String'];
@@ -186,19 +194,19 @@ export type WordQueryInput = {
   word?: InputMaybe<StringComparator>;
 };
 
-export type AdminSearchFromJDictQueryVariables = Exact<{
-  word: Scalars['String'];
-}>;
-
-
-export type AdminSearchFromJDictQuery = { __typename?: 'Query', jdictSearchWord: { __typename?: 'JDictAPIResult', data: Array<{ __typename?: 'JDictWord', id: number, word: string, kana: string, suggest_mean: string, level?: Record<string,any> | null, isExist?: { __typename?: 'Word', id: string, word: string, pronounce: string, explain: string, tags?: Array<{ __typename?: 'Tag', id: string }> | null } | null, kanjis: Array<{ __typename?: 'JDictKanji', id: number, kanji: string, hanviet: string, isExist?: { __typename?: 'Kanji', id: string, hv?: string | null } | null }> }> } };
-
 export type AddNewWordMutationVariables = Exact<{
   word: WordInsertInput;
 }>;
 
 
 export type AddNewWordMutation = { __typename?: 'Mutation', addNewWord: { __typename?: 'Word', id: string } };
+
+export type AdminSearchFromJDictQueryVariables = Exact<{
+  word: Scalars['String'];
+}>;
+
+
+export type AdminSearchFromJDictQuery = { __typename?: 'Query', jdictSearchWord: { __typename?: 'JDictAPIResult', data: Array<{ __typename?: 'JDictWord', id: number, word: string, kana: string, suggest_mean: string, level?: Record<string,any> | null, isExist?: { __typename?: 'Word', id: string, word: string, pronounce: string, explain: string, tags?: Array<{ __typename?: 'Tag', id: string }> | null } | null, kanjis: Array<{ __typename?: 'JDictKanji', id: number, kanji: string, hanviet: string, isExist?: { __typename?: 'Kanji', id: string, hv?: string | null } | null }> }> } };
 
 export type AdminGetOneKanjiQueryVariables = Exact<{
   id: Scalars['String'];
@@ -416,6 +424,7 @@ export type KanjiResolvers<ContextType = GraphQLContext, ParentType extends Reso
 
 export type MutationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   addNewWord?: Resolver<ResolversTypes['Word'], ParentType, ContextType, RequireFields<MutationAddNewWordArgs, 'word'>>;
+  setOppositeWord?: Resolver<ResolversTypes['Word'], ParentType, ContextType, RequireFields<MutationSetOppositeWordArgs, 'oppositeWordId' | 'wordID'>>;
   upsertKanji?: Resolver<ResolversTypes['Kanji'], ParentType, ContextType, RequireFields<MutationUpsertKanjiArgs, 'id' | 'kanji'>>;
   upsertKanjis?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationUpsertKanjisArgs, 'kanjis'>>;
   upsertTag?: Resolver<ResolversTypes['Tag'], ParentType, ContextType, RequireFields<MutationUpsertTagArgs, 'tag'>>;
@@ -442,6 +451,7 @@ export type WordResolvers<ContextType = GraphQLContext, ParentType extends Resol
   explain?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   kanji?: Resolver<Maybe<Array<ResolversTypes['Kanji']>>, ParentType, ContextType>;
+  opposite?: Resolver<Maybe<Array<ResolversTypes['Word']>>, ParentType, ContextType>;
   pronounce?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   tags?: Resolver<Maybe<Array<ResolversTypes['Tag']>>, ParentType, ContextType>;
   word?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

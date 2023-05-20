@@ -1,6 +1,7 @@
 import { QueryResolvers, WordResolvers } from "@/types";
 import { FirestoreCollections } from "@/src/const";
 import { firestore } from "firebase-admin";
+import { convertSnapshot } from "@/src/graphql/utils/convert";
 import DocumentReference = firestore.DocumentReference;
 
 export const queryWords: QueryResolvers["words"] = async (
@@ -51,4 +52,13 @@ export const queryKanjiInWord: WordResolvers["kanji"] = async (parent, _) => {
     id: snapshot.id,
     ...snapshot.data(),
   })) as any;
+};
+
+export const queryOppositesInWord: WordResolvers["opposite"] = async (
+  { opposite: _ops },
+  _,
+  { firestore }
+) => {
+  const docRefs = await firestore.getAll(...(_ops as any));
+  return docRefs.map(convertSnapshot);
 };

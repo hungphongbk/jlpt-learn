@@ -21,6 +21,7 @@ type Query{
 }
 type Mutation{
     addNewWord(word:WordInsertInput!):Word!
+    setOppositeWord(wordID:String!, oppositeWordId:String!):Word!
     upsertKanji(id:String!, kanji:KanjiUpsertInput!):Kanji!
     upsertKanjis(kanjis: [KanjiUpsertInputPair!]!):Boolean!
     upsertTag(tag:TagUpsertInput!):Tag!

@@ -1,6 +1,7 @@
 import { KANJI_REGEX } from "@/src/const";
 import { MutationResolvers } from "@/types";
 import { FieldValue } from "firebase-admin/firestore";
+import { convertSnapshot } from "@/src/graphql/utils/convert";
 
 const addNewWord: MutationResolvers["addNewWord"] = async (
   _: any,
@@ -49,3 +50,23 @@ const addNewWord: MutationResolvers["addNewWord"] = async (
 };
 
 export default addNewWord;
+
+export const setOppositeWord: MutationResolvers["setOppositeWord"] = async (
+  _,
+  { wordID, oppositeWordId },
+  { fsCollection, firestore }
+) => {
+  const batch = firestore.batch();
+
+  batch.update(fsCollection("vocabulary").doc(wordID), {
+    opposite: FieldValue.arrayUnion(
+      fsCollection("vocabulary").doc(oppositeWordId)
+    ),
+  });
+  batch.update(fsCollection("vocabulary").doc(oppositeWordId), {
+    opposite: FieldValue.arrayUnion(fsCollection("vocabulary").doc(wordID)),
+  });
+
+  await batch.commit();
+  return convertSnapshot(await fsCollection("vocabulary").doc(wordID).get());
+};
