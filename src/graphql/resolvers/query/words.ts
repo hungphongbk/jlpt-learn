@@ -6,11 +6,11 @@ import DocumentReference = firestore.DocumentReference;
 export const queryWords: QueryResolvers["words"] = async (
   _,
   { where, limit },
-  { firestore }
+  { fsCollection }
 ) => {
-  let ref: firestore.Query<firestore.DocumentData> = firestore.collection(
-    FirestoreCollections.Vocabulary
-  );
+  let ref: firestore.Query<firestore.DocumentData> = fsCollection(
+    "vocabulary"
+  ).orderBy("createdAt", "desc");
   if (where?.word?.eq) {
     ref = ref.where("word", "==", where.word.eq!);
   }
@@ -18,9 +18,7 @@ export const queryWords: QueryResolvers["words"] = async (
     ref = ref.where(
       "tags",
       "array-contains-any",
-      where.tags.arrayContainsAny.map((id) =>
-        firestore.collection(FirestoreCollections.Tag).doc(id)
-      )
+      where.tags.arrayContainsAny.map((id) => fsCollection("tag").doc(id))
     );
   }
   if (limit) {

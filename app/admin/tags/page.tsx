@@ -107,7 +107,7 @@ export default function TagsPage() {
       <Stack mb={2} spacing={5} direction={"column"} flex={1}>
         <AddNewWord />
         <TableContainer>
-          <Table variant="simple">
+          <Table variant="simple" size={"sm"}>
             <Thead>
               <Tr>
                 <Th>Từ vựng</Th>

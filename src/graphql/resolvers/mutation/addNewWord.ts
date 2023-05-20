@@ -37,7 +37,7 @@ const addNewWord: MutationResolvers["addNewWord"] = async (
       ...word,
       kanji,
       tags,
-      createdAt: Date(),
+      createdAt: FieldValue.serverTimestamp(),
     });
     await cache.invalidate([{ typename: "Word" }]);
     return {
