@@ -78,7 +78,7 @@ const SuggestFromJdict = () => {
     if (selected) {
       const { word, kana, suggest_mean, kanjis, isExist } = selected;
       if (!isExist) {
-        setWord(word);
+        setWord(word ?? kana);
         setPronounce(kana);
         setExplain(
           suggest_mean

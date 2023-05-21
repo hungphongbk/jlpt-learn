@@ -99,6 +99,7 @@ export default function SingleWordFormModalContent({
             <Button
               onClick={() => props.submitForm().then(() => afterSubmit?.())}
               mr={2}
+              isLoading={props.isSubmitting}
             >
               OK
             </Button>
