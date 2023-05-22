@@ -13,6 +13,7 @@ import JDictAPI from "@/lib/jdict";
 import { useResponseCache } from "@graphql-yoga/plugin-response-cache";
 import IORedis from "ioredis";
 import { createRedisCache } from "@envelop/response-cache-redis";
+import { FirebaseDocs } from "@/src/const";
 import CollectionReference = admin.firestore.CollectionReference;
 import DocumentData = admin.firestore.DocumentData;
 
@@ -24,11 +25,9 @@ const redis = new IORedis({
 
 const cache = createRedisCache({ redis });
 
-type Docs = "vocabulary" | "kanji" | "tag";
-
 export interface GraphQLContext extends YogaInitialContext {
   firestore: admin.firestore.Firestore;
-  fsCollection: (docName: Docs) => CollectionReference<DocumentData>;
+  fsCollection: (docName: FirebaseDocs) => CollectionReference<DocumentData>;
   jisho: JishoAPI;
   jdict: typeof JDictAPI;
   cache: typeof cache;
@@ -46,7 +45,7 @@ const graphqlServer = createYoga({
     const firestore = getFirestore();
     return {
       firestore,
-      fsCollection: (doc: Docs) => firestore.collection(doc),
+      fsCollection: (doc: FirebaseDocs) => firestore.collection(doc),
       jisho: new JishoAPI(),
       jdict: JDictAPI,
       cache,

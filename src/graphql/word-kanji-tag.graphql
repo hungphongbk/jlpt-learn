@@ -15,16 +15,23 @@ type Kanji{
     hv:String
 }
 
-#type WordMetadata{
-#  jdict:JDictWord
-#}
+type WordExplain{
+    explain:String!
+    tags:[Tag!] #empty means follow parent tag
+    preferredKana: Boolean
+}
+input WordExplainInput{
+    explain:String!
+    tags:[String!]
+    preferredKana:Boolean
+}
 type Word{
     id: ID!
     word:String!
     pronounce:String!
     tags:[Tag!]
     kanji:[Kanji!]
-    explain:String!
+    explain:[WordExplain!]!
     opposite:[Word!]
     #  metadata:WordMetadata
 }
@@ -33,7 +40,7 @@ input WordInsertInput{
     word:String!
     pronounce:String!
     tags:[String!]
-    explain:String!
+    explain:[WordExplainInput!]!
 }
 input WordQueryInput{
     word:StringComparator

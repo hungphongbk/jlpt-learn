@@ -5,3 +5,4 @@ export enum FirestoreCollections {
 }
 
 export const KANJI_REGEX = /^[一-龥]+$/;
+export type FirebaseDocs = "vocabulary" | "kanji" | "tag";

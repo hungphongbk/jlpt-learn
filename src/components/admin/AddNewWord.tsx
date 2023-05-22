@@ -8,13 +8,10 @@ import {
 } from "@chakra-ui/react";
 import React, { useContext, useState } from "react";
 import { gql, useMutation } from "@apollo/client";
-import SingleWordFormModalContent from "@/src/components/admin/SingleWordFormModalContent";
+import SingleWordFormModalContent from "@/src/components/admin/words/SingleWordFormModalContent";
 import { AddIcon } from "@chakra-ui/icons";
 import { AdminContext } from "@/app/admin/context";
-import { AdminSearchFromJDictQuery } from "@/src/graphql-client/graphql";
-import SuggestFromJdict from "@/src/components/admin/AddNewWord/SuggestFromJDict";
-
-type JDictData = AdminSearchFromJDictQuery["jdictSearchWord"]["data"][number];
+import SuggestFromJdict from "@/src/components/admin/words/SuggestFromJDict";
 
 const ADD_NEW_WORD = gql`
   mutation AddNewWord($word: WordInsertInput!) {
@@ -58,7 +55,7 @@ export default function AddNewWord() {
               id: null,
               word: "",
               pronounce: "",
-              explain: "",
+              explain: [],
               tags,
               kanji: null,
             }}

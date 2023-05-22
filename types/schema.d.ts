@@ -172,7 +172,7 @@ export type TagUpsertInput = {
 
 export type Word = {
   __typename?: 'Word';
-  explain: Scalars['String'];
+  explain: Array<WordExplain>;
   id: Scalars['ID'];
   kanji?: Maybe<Array<Kanji>>;
   opposite?: Maybe<Array<Word>>;
@@ -181,8 +181,21 @@ export type Word = {
   word: Scalars['String'];
 };
 
-export type WordInsertInput = {
+export type WordExplain = {
+  __typename?: 'WordExplain';
   explain: Scalars['String'];
+  preferredKana?: Maybe<Scalars['Boolean']>;
+  tags?: Maybe<Array<Tag>>;
+};
+
+export type WordExplainInput = {
+  explain: Scalars['String'];
+  preferredKana?: InputMaybe<Scalars['Boolean']>;
+  tags?: InputMaybe<Array<Scalars['String']>>;
+};
+
+export type WordInsertInput = {
+  explain: Array<WordExplainInput>;
   id?: InputMaybe<Scalars['String']>;
   pronounce: Scalars['String'];
   tags?: InputMaybe<Array<Scalars['String']>>;
@@ -201,13 +214,6 @@ export type AddNewWordMutationVariables = Exact<{
 
 export type AddNewWordMutation = { __typename?: 'Mutation', addNewWord: { __typename?: 'Word', id: string } };
 
-export type AdminSearchFromJDictQueryVariables = Exact<{
-  word: Scalars['String'];
-}>;
-
-
-export type AdminSearchFromJDictQuery = { __typename?: 'Query', jdictSearchWord: { __typename?: 'JDictAPIResult', data: Array<{ __typename?: 'JDictWord', id: number, word: string, kana: string, suggest_mean: string, level?: Record<string,any> | null, isExist?: { __typename?: 'Word', id: string, word: string, pronounce: string, explain: string, tags?: Array<{ __typename?: 'Tag', id: string }> | null } | null, kanjis: Array<{ __typename?: 'JDictKanji', id: number, kanji: string, hanviet: string, isExist?: { __typename?: 'Kanji', id: string, hv?: string | null } | null }> }> } };
-
 export type AdminGetOneKanjiQueryVariables = Exact<{
   id: Scalars['String'];
 }>;
@@ -223,6 +229,13 @@ export type AdminUpsertOneKanjiMutationVariables = Exact<{
 
 export type AdminUpsertOneKanjiMutation = { __typename?: 'Mutation', upsertKanji: { __typename?: 'Kanji', id: string, hv?: string | null } };
 
+export type AdminSearchFromJDictQueryVariables = Exact<{
+  word: Scalars['String'];
+}>;
+
+
+export type AdminSearchFromJDictQuery = { __typename?: 'Query', jdictSearchWord: { __typename?: 'JDictAPIResult', data: Array<{ __typename?: 'JDictWord', id: number, word: string, kana: string, suggest_mean: string, level?: Record<string,any> | null, isExist?: { __typename?: 'Word', id: string, word: string, pronounce: string, explain: Array<{ __typename?: 'WordExplain', explain: string }>, tags?: Array<{ __typename?: 'Tag', id: string }> | null } | null, kanjis: Array<{ __typename?: 'JDictKanji', id: number, kanji: string, hanviet: string, isExist?: { __typename?: 'Kanji', id: string, hv?: string | null } | null }> }> } };
+
 export type AdminAllTagsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -233,14 +246,14 @@ export type AdminGetAllWordQueryVariables = Exact<{
 }>;
 
 
-export type AdminGetAllWordQuery = { __typename?: 'Query', words?: Array<{ __typename?: 'Word', id: string, word: string, pronounce: string, explain: string }> | null };
+export type AdminGetAllWordQuery = { __typename?: 'Query', words?: Array<{ __typename?: 'Word', id: string, word: string, pronounce: string, explain: Array<{ __typename?: 'WordExplain', explain: string }> }> | null };
 
 export type AdminSearchWordQueryVariables = Exact<{
   word: Scalars['String'];
 }>;
 
 
-export type AdminSearchWordQuery = { __typename?: 'Query', words?: Array<{ __typename?: 'Word', id: string, word: string, pronounce: string, explain: string, tags?: Array<{ __typename?: 'Tag', id: string }> | null, kanji?: Array<{ __typename?: 'Kanji', id: string, hv?: string | null }> | null }> | null };
+export type AdminSearchWordQuery = { __typename?: 'Query', words?: Array<{ __typename?: 'Word', id: string, word: string, pronounce: string, explain: Array<{ __typename?: 'WordExplain', explain: string }>, tags?: Array<{ __typename?: 'Tag', id: string }> | null, kanji?: Array<{ __typename?: 'Kanji', id: string, hv?: string | null }> | null }> | null };
 
 
 
@@ -335,6 +348,8 @@ export type ResolversTypes = {
   Tag: ResolverTypeWrapper<Tag>;
   TagUpsertInput: TagUpsertInput;
   Word: ResolverTypeWrapper<Word>;
+  WordExplain: ResolverTypeWrapper<WordExplain>;
+  WordExplainInput: WordExplainInput;
   WordInsertInput: WordInsertInput;
   WordQueryInput: WordQueryInput;
 };
@@ -363,6 +378,8 @@ export type ResolversParentTypes = {
   Tag: Tag;
   TagUpsertInput: TagUpsertInput;
   Word: Word;
+  WordExplain: WordExplain;
+  WordExplainInput: WordExplainInput;
   WordInsertInput: WordInsertInput;
   WordQueryInput: WordQueryInput;
 };
@@ -448,13 +465,20 @@ export type TagResolvers<ContextType = GraphQLContext, ParentType extends Resolv
 };
 
 export type WordResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Word'] = ResolversParentTypes['Word']> = {
-  explain?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  explain?: Resolver<Array<ResolversTypes['WordExplain']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   kanji?: Resolver<Maybe<Array<ResolversTypes['Kanji']>>, ParentType, ContextType>;
   opposite?: Resolver<Maybe<Array<ResolversTypes['Word']>>, ParentType, ContextType>;
   pronounce?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   tags?: Resolver<Maybe<Array<ResolversTypes['Tag']>>, ParentType, ContextType>;
   word?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type WordExplainResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['WordExplain'] = ResolversParentTypes['WordExplain']> = {
+  explain?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  preferredKana?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['Tag']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -472,5 +496,6 @@ export type Resolvers<ContextType = GraphQLContext> = {
   Query?: QueryResolvers<ContextType>;
   Tag?: TagResolvers<ContextType>;
   Word?: WordResolvers<ContextType>;
+  WordExplain?: WordExplainResolvers<ContextType>;
 };
 

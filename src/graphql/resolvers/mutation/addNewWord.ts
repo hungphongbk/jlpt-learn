@@ -1,7 +1,7 @@
 import { KANJI_REGEX } from "@/src/const";
 import { MutationResolvers } from "@/types";
 import { FieldValue } from "firebase-admin/firestore";
-import { convertSnapshot } from "@/src/graphql/utils/convert";
+import { convertSnapshot, idToRef } from "@/src/graphql/utils/convert";
 
 const addNewWord: MutationResolvers["addNewWord"] = async (
   _: any,
@@ -19,7 +19,12 @@ const addNewWord: MutationResolvers["addNewWord"] = async (
     }
     return await acc;
   }, Promise.resolve([] as string[]));
-  const tags = _tags!.map((id) => fsCollection("tag").doc(id));
+  const tags = _tags!.map(idToRef("tag"));
+  for (const exp of word.explain) {
+    if (exp.tags) {
+      exp.tags = exp.tags.map(idToRef("tag")) as any[];
+    }
+  }
   if (existId) {
     await fsCollection("vocabulary")
       .doc(existId)

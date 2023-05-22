@@ -12,6 +12,7 @@ import {
 import TextField from "@/src/components/common/TextField";
 import KanjiCell from "@/src/components/admin/KanjiCell";
 import TagAutocomplete from "@/src/components/admin/TagAutocomplete";
+import MultipleExplain from "@/src/components/admin/words/MultipleExplain";
 
 const KanjiView = ({ name }: { name: string }) => {
   const [{ value }] = useField<string>(name);
@@ -79,18 +80,19 @@ export default function SingleWordFormModalContent({
                   placeholder={"ひらがな"}
                   variant={"filled"}
                 />
-                <Field
-                  id={"explain"}
-                  name={"explain"}
-                  as={TextField}
-                  label={"Giải thích"}
-                  placeholder={"Nghĩa là gì..."}
-                  variant={"filled"}
-                />
                 <FormControl id="email">
                   <FormLabel>Tags</FormLabel>
                   <TagAutocomplete name={"tags"} />
                 </FormControl>
+                <Field
+                  className={"col-span-2"}
+                  id={"explain"}
+                  name={"explain"}
+                  component={MultipleExplain}
+                  label={"Giải thích"}
+                  placeholder={"Nghĩa là gì..."}
+                  variant={"filled"}
+                />
                 {/*<Field as={MultiSelect} name={"tags"} id={"tags"} />*/}
               </div>
             </div>

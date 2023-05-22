@@ -19,7 +19,9 @@ export const GET_ALL_WORD = graphql(/*GraphQL*/ `
       id
       word
       pronounce
-      explain
+      explain {
+        explain
+      }
     }
   }
 `);
@@ -30,7 +32,9 @@ export const SEARCH_WORD = graphql(/*GraphQL*/ `
       id
       word
       pronounce
-      explain
+      explain {
+        explain
+      }
       tags {
         id
       }

@@ -9,13 +9,18 @@ import {
   chakra,
   Flex,
   FlexProps,
+  Icon,
   Input,
+  InputGroup,
+  InputRightElement,
   Popover,
   PopoverContent,
   PopoverContentProps,
+  Spinner,
   Tag,
 } from "@chakra-ui/react";
 import clsx from "clsx";
+import { VscError } from "react-icons/all";
 
 const SUGGEST_FROM_JDICT = graphql(`
   query AdminSearchFromJDict($word: String!) {
@@ -29,7 +34,9 @@ const SUGGEST_FROM_JDICT = graphql(`
           id
           word
           pronounce
-          explain
+          explain {
+            explain
+          }
           tags {
             id
           }
@@ -54,7 +61,7 @@ type JDictData = AdminSearchFromJDictQuery["jdictSearchWord"]["data"][number];
 const SuggestFromJdict = () => {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
-  const [fetch, { data }] = useLazyQuery(SUGGEST_FROM_JDICT);
+  const [fetch, { data, loading, error }] = useLazyQuery(SUGGEST_FROM_JDICT);
   const [, , { setValue: setWord }] = useField("word");
   const [, , { setValue: setPronounce }] = useField("pronounce");
   const [, , { setValue: setExplain }] = useField("explain");
@@ -80,13 +87,15 @@ const SuggestFromJdict = () => {
       if (!isExist) {
         setWord(word ?? kana);
         setPronounce(kana);
-        setExplain(
-          suggest_mean
-            .split(";")
-            .filter(Boolean)
-            .map((s) => s.trim())
-            .join("; ")
-        );
+        setExplain([
+          {
+            explain: suggest_mean
+              .split(";")
+              .filter(Boolean)
+              .map((s) => s.trim())
+              .join("; "),
+          },
+        ]);
         setKanji(
           kanjis.map((k: any) => ({
             id: k.isExist?.id ?? k.kanji,
@@ -98,6 +107,11 @@ const SuggestFromJdict = () => {
         const exist = isExist;
         setWord(word);
         setPronounce(exist.pronounce);
+
+        exist.explain.forEach((exp) => {
+          delete exp.__typename;
+        });
+
         setExplain(exist.explain);
         setId(exist.id);
         setTags({
@@ -131,19 +145,28 @@ const SuggestFromJdict = () => {
           }}
           w="full"
         >
-          <Input
-            placeholder={"何の漢字"}
-            variant="filled"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                doSearch();
-              }
-            }}
-          />
+          <InputGroup>
+            <Input
+              placeholder={"何の漢字"}
+              variant="filled"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  doSearch();
+                }
+              }}
+            />
+            <InputRightElement>
+              {loading ? (
+                <Spinner />
+              ) : error ? (
+                <Icon as={VscError} color={"red.500"} />
+              ) : null}
+            </InputRightElement>
+          </InputGroup>
           {selected?.level && (
             <div className={"mt-2"}>
               <Tag>

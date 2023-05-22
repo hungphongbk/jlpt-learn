@@ -120,7 +120,7 @@ export default function TagsPage() {
                 <Tr key={word.id}>
                   <Td>{word.word}</Td>
                   <Td>{word.pronounce}</Td>
-                  <Td>{word.explain}</Td>
+                  <Td>{word.explain.map((e) => e.explain).join("; ")}</Td>
                 </Tr>
               ))}
             </Tbody>
