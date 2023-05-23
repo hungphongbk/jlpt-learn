@@ -236,6 +236,13 @@ export type AdminSearchFromJDictQueryVariables = Exact<{
 
 export type AdminSearchFromJDictQuery = { __typename?: 'Query', jdictSearchWord: { __typename?: 'JDictAPIResult', data: Array<{ __typename?: 'JDictWord', id: number, word: string, kana: string, suggest_mean: string, level?: Record<string,any> | null, isExist?: { __typename?: 'Word', id: string, word: string, pronounce: string, explain: Array<{ __typename?: 'WordExplain', explain: string }>, tags?: Array<{ __typename?: 'Tag', id: string }> | null } | null, kanjis: Array<{ __typename?: 'JDictKanji', id: number, kanji: string, hanviet: string, isExist?: { __typename?: 'Kanji', id: string, hv?: string | null } | null }> }> } };
 
+export type AdminUpsertTagMutationVariables = Exact<{
+  input: TagUpsertInput;
+}>;
+
+
+export type AdminUpsertTagMutation = { __typename?: 'Mutation', upsertTag: { __typename?: 'Tag', id: string } };
+
 export type AdminAllTagsQueryVariables = Exact<{ [key: string]: never; }>;
 
 

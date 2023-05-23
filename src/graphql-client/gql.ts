@@ -17,6 +17,7 @@ const documents = {
     "\n  mutation AdminUpsertOneKanji($id: String!, $kanji: KanjiUpsertInput!) {\n    upsertKanji(id: $id, kanji: $kanji) {\n      id\n      hv\n    }\n  }\n": types.AdminUpsertOneKanjiDocument,
     "\n  query AdminGetOneWord($id: String!) {\n    word(id: $id) {\n      id\n      word\n      pronounce\n      explain {\n        explain\n        preferredKana\n      }\n      kanji {\n        id\n        hv\n      }\n      tags {\n        id\n      }\n    }\n  }\n": types.AdminGetOneWordDocument,
     "\n  query AdminSearchFromJDict($word: String!) {\n    jdictSearchWord(word: $word) {\n      data {\n        id\n        word\n        kana\n        suggest_mean\n        isExist {\n          id\n          word\n          pronounce\n          explain {\n            explain\n          }\n          tags {\n            id\n          }\n        }\n        kanjis {\n          id\n          kanji\n          hanviet\n          isExist {\n            id\n            hv\n          }\n        }\n        level\n      }\n    }\n  }\n": types.AdminSearchFromJDictDocument,
+    "\n  mutation AdminUpsertTag($input: TagUpsertInput!) {\n    upsertTag(tag: $input) {\n      id\n    }\n  }\n": types.AdminUpsertTagDocument,
     "\n  query AdminAllTags {\n    tags {\n      id\n      label\n      children {\n        id\n        label\n      }\n    }\n  }\n": types.AdminAllTagsDocument,
     "\n  query AdminGetAllWord($where: WordQueryInput) {\n    words(where: $where) {\n      id\n      word\n      pronounce\n      explain {\n        explain\n      }\n    }\n  }\n": types.AdminGetAllWordDocument,
     "\n  query AdminSearchWord($word: String!) {\n    words(where: { word: { eq: $word } }) {\n      id\n      word\n      pronounce\n      explain {\n        explain\n      }\n      tags {\n        id\n      }\n      kanji {\n        id\n        hv\n      }\n    }\n  }\n": types.AdminSearchWordDocument,
@@ -53,6 +54,10 @@ export function graphql(source: "\n  query AdminGetOneWord($id: String!) {\n    
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query AdminSearchFromJDict($word: String!) {\n    jdictSearchWord(word: $word) {\n      data {\n        id\n        word\n        kana\n        suggest_mean\n        isExist {\n          id\n          word\n          pronounce\n          explain {\n            explain\n          }\n          tags {\n            id\n          }\n        }\n        kanjis {\n          id\n          kanji\n          hanviet\n          isExist {\n            id\n            hv\n          }\n        }\n        level\n      }\n    }\n  }\n"): (typeof documents)["\n  query AdminSearchFromJDict($word: String!) {\n    jdictSearchWord(word: $word) {\n      data {\n        id\n        word\n        kana\n        suggest_mean\n        isExist {\n          id\n          word\n          pronounce\n          explain {\n            explain\n          }\n          tags {\n            id\n          }\n        }\n        kanjis {\n          id\n          kanji\n          hanviet\n          isExist {\n            id\n            hv\n          }\n        }\n        level\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation AdminUpsertTag($input: TagUpsertInput!) {\n    upsertTag(tag: $input) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation AdminUpsertTag($input: TagUpsertInput!) {\n    upsertTag(tag: $input) {\n      id\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

@@ -1,10 +1,12 @@
 import type {SyntheticEvent} from "react";
-import {memo, useCallback, useMemo, useRef} from "react";
-import {Box, chakra, Checkbox, HStack, IconButton} from "@chakra-ui/react";
+import {memo, useCallback, useContext, useMemo, useRef} from "react";
+import {Box, chakra, Checkbox, HStack, IconButton, MenuItem, MenuList,} from "@chakra-ui/react";
 import {BiChevronDown, BiChevronRight} from "react-icons/bi";
 import {useTree} from "./useTree";
 import {TreeExpandedKeys, TreeNode, UITreeNodeProps,} from "@/src/components/common/tree/utils";
 import {Maybe} from "@/types";
+import {ContextMenu} from "chakra-ui-contextmenu";
+import {TagTreeContext} from "@/src/components/common/tree/context";
 
 /**
  * Modified version of https://github.com/primefaces/primereact/tree/master/components/lib/tree
@@ -114,7 +116,25 @@ export const UITreeNode = memo(function UITreeNode({
     [collapse, expand, isExpanded]
   );
 
-  const createLabel = (): JSX.Element => <Box as="span">{node.label}</Box>;
+  const { setAddChildForTag } = useContext(TagTreeContext);
+
+  const createLabel = (): JSX.Element => (
+    <ContextMenu
+      renderMenu={() => (
+        <MenuList>
+          <MenuItem onClick={() => setAddChildForTag?.(node.key)}>
+            Thêm tag con
+          </MenuItem>
+        </MenuList>
+      )}
+    >
+      {(handlerRef) => (
+        <Box as="span" ref={handlerRef}>
+          {node.label}
+        </Box>
+      )}
+    </ContextMenu>
+  );
 
   const createCheckbox = (): JSX.Element => (
     <Checkbox

@@ -5,7 +5,7 @@ import { convertSnapshot } from "@/src/graphql/utils/convert";
 export const upsertTag: MutationResolvers["upsertTag"] = async (
   _,
   { tag: { id, parentId, ...tag } },
-  { fsCollection, firestore }
+  { fsCollection, firestore, cache }
 ) => {
   const tagRef = fsCollection("tag").doc(id);
   const batch = firestore.batch();
@@ -24,5 +24,6 @@ export const upsertTag: MutationResolvers["upsertTag"] = async (
   }
 
   await batch.commit();
+  await cache.invalidate([{ typename: "Tag" }]);
   return convertSnapshot(await tagRef.get()) as any;
 };

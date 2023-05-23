@@ -31,6 +31,7 @@
     "@vercel/kv": "^0.2.0",
     "autoprefixer": "10.4.14",
     "axios": "^1.4.0",
+    "chakra-ui-contextmenu": "^1.0.5",
     "cheerio": "^1.0.0-rc.12",
     "clsx": "^1.2.1",
     "escape-string-regexp": "^1.0.5",
