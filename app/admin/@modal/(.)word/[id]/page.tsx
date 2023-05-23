@@ -1,24 +1,16 @@
 "use client";
 
 import { Modal, ModalContent, ModalOverlay } from "@chakra-ui/react";
-import React, { useMemo } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
-import SingleWordFormModalContent from "@/src/components/admin/SingleWordFormModalContent";
-import { useQuery } from "@apollo/client"; // @ts-ignore
-import GET_ONE_WORD from "@/app/admin/AdminGetOneWord.graphql";
+import SingleWordFormModalContent from "@/src/components/admin/words/SingleWordFormModalContent";
+import useGetOneWord from "@/src/components/admin/useGetOneWord";
+import { removeTypename } from "@/src/graphql-client/utils";
 
 export default function WordModal({ params }: any) {
   const router = useRouter();
 
-  const { data } = useQuery(GET_ONE_WORD, { variables: { id: params.id } });
-
-  const initialWord = useMemo(() => {
-    if (!data?.word) {
-      return { word: "" };
-    }
-
-    return data.word;
-  }, [data]);
+  const { initialWord, mutate } = useGetOneWord(params.id);
 
   const onClose = () => {
     router.back();
@@ -31,7 +23,10 @@ export default function WordModal({ params }: any) {
         <SingleWordFormModalContent
           modalTitle={`Chỉnh sửa từ vựng ${initialWord.word}`}
           word={initialWord}
-          onSubmit={() => {}}
+          onSubmit={async (values: any) => {
+            delete values.kanji;
+            await mutate({ variables: { word: removeTypename(values) } });
+          }}
           onCancel={onClose}
         />
       </ModalContent>

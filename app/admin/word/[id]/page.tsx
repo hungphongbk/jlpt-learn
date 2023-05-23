@@ -1,25 +1,15 @@
 "use client";
-// @ts-ignore
-import GET_ONE_WORD from "@/app/admin/AdminGetOneWord.graphql";
 import { useRouter } from "next/navigation";
-import { useQuery } from "@apollo/client";
-import React, { useMemo } from "react";
+import React from "react";
 import { Card, CardBody, CardFooter } from "@chakra-ui/card";
-import SingleWordFormModalContent from "@/src/components/admin/SingleWordFormModalContent";
+import SingleWordFormModalContent from "@/src/components/admin/words/SingleWordFormModalContent";
 import { CardHeader, Heading } from "@chakra-ui/react";
+import useGetOneWord from "@/src/components/admin/useGetOneWord";
 
 export default function WordPage({ params }: any) {
   const router = useRouter();
 
-  const { data } = useQuery(GET_ONE_WORD, { variables: { id: params.id } });
-
-  const initialWord = useMemo(() => {
-    if (!data?.word) {
-      return { word: "" };
-    }
-
-    return data.word;
-  }, [data]);
+  const { initialWord } = useGetOneWord(params.id);
 
   return (
     <Card mt={4}>

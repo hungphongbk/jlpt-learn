@@ -23,6 +23,7 @@ import {
 import { Tree, useTree } from "@/src/components/common/tree";
 import AddNewWord from "@/src/components/admin/AddNewWord";
 import { AdminContext } from "@/app/admin/context";
+import { useRouter } from "next/navigation";
 
 export default function TagsPage() {
   const { data } = useQuery(QUERY_ALL_TAGS);
@@ -99,6 +100,8 @@ export default function TagsPage() {
   //   );
   // };
 
+  const router = useRouter();
+
   return (
     <Flex className={"p-3"}>
       <Box w={"200px"} pr={2}>
@@ -118,7 +121,13 @@ export default function TagsPage() {
             <Tbody>
               {wordsData?.words?.map((word) => (
                 <Tr key={word.id}>
-                  <Td>{word.word}</Td>
+                  <Td
+                    onClick={() => {
+                      router.push(`/admin/word/${word.id}`);
+                    }}
+                  >
+                    {word.word}
+                  </Td>
                   <Td>{word.pronounce}</Td>
                   <Td>{word.explain.map((e) => e.explain).join("; ")}</Td>
                 </Tr>

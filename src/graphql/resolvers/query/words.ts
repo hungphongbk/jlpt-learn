@@ -39,11 +39,12 @@ export const queryOneWord: QueryResolvers["word"] = async (
   { id },
   { firestore }
 ) => {
-  const doc = (
-    await firestore.collection(FirestoreCollections.Vocabulary).doc(id).get()
-  ).data();
+  const doc = await firestore
+    .collection(FirestoreCollections.Vocabulary)
+    .doc(id)
+    .get();
 
-  return doc as any;
+  return convertSnapshot(doc) as any;
 };
 
 export const queryKanjiInWord: WordResolvers["kanji"] = async (parent, _) => {
@@ -52,6 +53,16 @@ export const queryKanjiInWord: WordResolvers["kanji"] = async (parent, _) => {
     id: snapshot.id,
     ...snapshot.data(),
   })) as any;
+};
+
+export const queryTagsInWord: WordResolvers["tags"] = async (
+  parent,
+  _,
+  { firestore }
+) => {
+  const tags = parent.tags as unknown as DocumentReference[];
+  const refs = await firestore.getAll(...tags);
+  return refs.map(convertSnapshot);
 };
 
 export const queryOppositesInWord: WordResolvers["opposite"] = async (

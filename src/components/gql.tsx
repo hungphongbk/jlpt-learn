@@ -1,4 +1,5 @@
 import { graphql } from "@/src/graphql-client/gql";
+import { gql } from "@apollo/client";
 
 export const QUERY_ALL_TAGS = graphql(/* GraphQL */ `
   query AdminAllTags {
@@ -45,3 +46,11 @@ export const SEARCH_WORD = graphql(/*GraphQL*/ `
     }
   }
 `);
+
+export const UPSERT_WORD = gql`
+  mutation AddNewWord($word: WordInsertInput!) {
+    addNewWord(word: $word) {
+      id
+    }
+  }
+`;

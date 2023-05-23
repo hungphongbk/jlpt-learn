@@ -27,7 +27,7 @@ export default function MultipleExplain({
         name={field.name}
         render={(helpers) => (
           <div>
-            <FormLabel>
+            <FormLabel className={"inline-block"}>
               <span>Nghĩa</span>
               <IconButton
                 aria-label={""}

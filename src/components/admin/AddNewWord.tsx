@@ -7,19 +7,12 @@ import {
   ModalOverlay,
 } from "@chakra-ui/react";
 import React, { useContext, useState } from "react";
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import SingleWordFormModalContent from "@/src/components/admin/words/SingleWordFormModalContent";
 import { AddIcon } from "@chakra-ui/icons";
 import { AdminContext } from "@/app/admin/context";
 import SuggestFromJdict from "@/src/components/admin/words/SuggestFromJDict";
-
-const ADD_NEW_WORD = gql`
-  mutation AddNewWord($word: WordInsertInput!) {
-    addNewWord(word: $word) {
-      id
-    }
-  }
-`;
+import { UPSERT_WORD } from "@/src/components/gql";
 
 export default function AddNewWord() {
   const [show, setShow] = useState(false);
@@ -27,7 +20,7 @@ export default function AddNewWord() {
   const onClick = () => setShow(true),
     onClose = () => setShow(false);
 
-  const [mutate] = useMutation(ADD_NEW_WORD, {
+  const [mutate] = useMutation(UPSERT_WORD, {
     refetchQueries: ["AdminGetAllWord"],
   });
 

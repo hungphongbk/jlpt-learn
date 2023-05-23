@@ -6,6 +6,7 @@ import {
   queryKanjiInWord,
   queryOneWord,
   queryOppositesInWord,
+  queryTagsInWord,
   queryWords,
 } from "@/src/graphql/resolvers/query/words";
 import { queryOneKanji } from "@/src/graphql/resolvers/query/kanji";
@@ -46,6 +47,7 @@ export default {
   },
   Word: {
     kanji: queryKanjiInWord,
+    tags: queryTagsInWord,
     opposite: queryOppositesInWord,
   },
   Tag: {

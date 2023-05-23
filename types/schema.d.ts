@@ -207,13 +207,6 @@ export type WordQueryInput = {
   word?: InputMaybe<StringComparator>;
 };
 
-export type AddNewWordMutationVariables = Exact<{
-  word: WordInsertInput;
-}>;
-
-
-export type AddNewWordMutation = { __typename?: 'Mutation', addNewWord: { __typename?: 'Word', id: string } };
-
 export type AdminGetOneKanjiQueryVariables = Exact<{
   id: Scalars['String'];
 }>;
@@ -228,6 +221,13 @@ export type AdminUpsertOneKanjiMutationVariables = Exact<{
 
 
 export type AdminUpsertOneKanjiMutation = { __typename?: 'Mutation', upsertKanji: { __typename?: 'Kanji', id: string, hv?: string | null } };
+
+export type AdminGetOneWordQueryVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type AdminGetOneWordQuery = { __typename?: 'Query', word: { __typename?: 'Word', id: string, word: string, pronounce: string, explain: Array<{ __typename?: 'WordExplain', explain: string, preferredKana?: boolean | null }>, kanji?: Array<{ __typename?: 'Kanji', id: string, hv?: string | null }> | null, tags?: Array<{ __typename?: 'Tag', id: string }> | null } };
 
 export type AdminSearchFromJDictQueryVariables = Exact<{
   word: Scalars['String'];
@@ -254,6 +254,13 @@ export type AdminSearchWordQueryVariables = Exact<{
 
 
 export type AdminSearchWordQuery = { __typename?: 'Query', words?: Array<{ __typename?: 'Word', id: string, word: string, pronounce: string, explain: Array<{ __typename?: 'WordExplain', explain: string }>, tags?: Array<{ __typename?: 'Tag', id: string }> | null, kanji?: Array<{ __typename?: 'Kanji', id: string, hv?: string | null }> | null }> | null };
+
+export type AddNewWordMutationVariables = Exact<{
+  word: WordInsertInput;
+}>;
+
+
+export type AddNewWordMutation = { __typename?: 'Mutation', addNewWord: { __typename?: 'Word', id: string } };
 
 
 
