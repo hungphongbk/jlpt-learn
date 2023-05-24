@@ -15,13 +15,19 @@ export const QUERY_ALL_TAGS = graphql(/* GraphQL */ `
 `);
 
 export const GET_ALL_WORD = graphql(/*GraphQL*/ `
-  query AdminGetAllWord($where: WordQueryInput) {
-    words(where: $where) {
-      id
-      word
-      pronounce
-      explain {
-        explain
+  query AdminGetAllWord($where: WordQueryInput, $page: Int) {
+    words(where: $where, page: $page) {
+      pagination {
+        page
+        totalPage
+      }
+      data {
+        id
+        word
+        pronounce
+        explain {
+          explain
+        }
       }
     }
   }
@@ -30,18 +36,20 @@ export const GET_ALL_WORD = graphql(/*GraphQL*/ `
 export const SEARCH_WORD = graphql(/*GraphQL*/ `
   query AdminSearchWord($word: String!) {
     words(where: { word: { eq: $word } }) {
-      id
-      word
-      pronounce
-      explain {
-        explain
-      }
-      tags {
+      data {
         id
-      }
-      kanji {
-        id
-        hv
+        word
+        pronounce
+        explain {
+          explain
+        }
+        tags {
+          id
+        }
+        kanji {
+          id
+          hv
+        }
       }
     }
   }

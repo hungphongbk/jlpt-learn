@@ -113,6 +113,12 @@ export type MutationUpsertTagArgs = {
   tag: TagUpsertInput;
 };
 
+export type PaginationData = {
+  __typename?: 'PaginationData';
+  page: Scalars['Int'];
+  totalPage: Scalars['Int'];
+};
+
 export type Query = {
   __typename?: 'Query';
   jdictSearchWord: JDictApiResult;
@@ -120,7 +126,7 @@ export type Query = {
   kanji: Kanji;
   tags?: Maybe<Array<Tag>>;
   word: Word;
-  words?: Maybe<Array<Word>>;
+  words: WordsResponse;
 };
 
 
@@ -146,6 +152,7 @@ export type QueryWordArgs = {
 
 export type QueryWordsArgs = {
   limit?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<WordQueryInput>;
 };
 
@@ -207,6 +214,12 @@ export type WordQueryInput = {
   word?: InputMaybe<StringComparator>;
 };
 
+export type WordsResponse = {
+  __typename?: 'WordsResponse';
+  data?: Maybe<Array<Word>>;
+  pagination: PaginationData;
+};
+
 export type AdminGetOneKanjiQueryVariables = Exact<{
   id: Scalars['String'];
 }>;
@@ -250,17 +263,18 @@ export type AdminAllTagsQuery = { __typename?: 'Query', tags?: Array<{ __typenam
 
 export type AdminGetAllWordQueryVariables = Exact<{
   where?: InputMaybe<WordQueryInput>;
+  page?: InputMaybe<Scalars['Int']>;
 }>;
 
 
-export type AdminGetAllWordQuery = { __typename?: 'Query', words?: Array<{ __typename?: 'Word', id: string, word: string, pronounce: string, explain: Array<{ __typename?: 'WordExplain', explain: string }> }> | null };
+export type AdminGetAllWordQuery = { __typename?: 'Query', words: { __typename?: 'WordsResponse', pagination: { __typename?: 'PaginationData', page: number, totalPage: number }, data?: Array<{ __typename?: 'Word', id: string, word: string, pronounce: string, explain: Array<{ __typename?: 'WordExplain', explain: string }> }> | null } };
 
 export type AdminSearchWordQueryVariables = Exact<{
   word: Scalars['String'];
 }>;
 
 
-export type AdminSearchWordQuery = { __typename?: 'Query', words?: Array<{ __typename?: 'Word', id: string, word: string, pronounce: string, explain: Array<{ __typename?: 'WordExplain', explain: string }>, tags?: Array<{ __typename?: 'Tag', id: string }> | null, kanji?: Array<{ __typename?: 'Kanji', id: string, hv?: string | null }> | null }> | null };
+export type AdminSearchWordQuery = { __typename?: 'Query', words: { __typename?: 'WordsResponse', data?: Array<{ __typename?: 'Word', id: string, word: string, pronounce: string, explain: Array<{ __typename?: 'WordExplain', explain: string }>, tags?: Array<{ __typename?: 'Tag', id: string }> | null, kanji?: Array<{ __typename?: 'Kanji', id: string, hv?: string | null }> | null }> | null } };
 
 export type AddNewWordMutationVariables = Exact<{
   word: WordInsertInput;
@@ -356,6 +370,7 @@ export type ResolversTypes = {
   KanjiUpsertInput: KanjiUpsertInput;
   KanjiUpsertInputPair: KanjiUpsertInputPair;
   Mutation: ResolverTypeWrapper<{}>;
+  PaginationData: ResolverTypeWrapper<PaginationData>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
   StringComparator: StringComparator;
@@ -366,6 +381,7 @@ export type ResolversTypes = {
   WordExplainInput: WordExplainInput;
   WordInsertInput: WordInsertInput;
   WordQueryInput: WordQueryInput;
+  WordsResponse: ResolverTypeWrapper<WordsResponse>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -386,6 +402,7 @@ export type ResolversParentTypes = {
   KanjiUpsertInput: KanjiUpsertInput;
   KanjiUpsertInputPair: KanjiUpsertInputPair;
   Mutation: {};
+  PaginationData: PaginationData;
   Query: {};
   String: Scalars['String'];
   StringComparator: StringComparator;
@@ -396,6 +413,7 @@ export type ResolversParentTypes = {
   WordExplainInput: WordExplainInput;
   WordInsertInput: WordInsertInput;
   WordQueryInput: WordQueryInput;
+  WordsResponse: WordsResponse;
 };
 
 export type JDictApiResultResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['JDictAPIResult'] = ResolversParentTypes['JDictAPIResult']> = {
@@ -461,13 +479,19 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   upsertTag?: Resolver<ResolversTypes['Tag'], ParentType, ContextType, RequireFields<MutationUpsertTagArgs, 'tag'>>;
 };
 
+export type PaginationDataResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PaginationData'] = ResolversParentTypes['PaginationData']> = {
+  page?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  totalPage?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type QueryResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   jdictSearchWord?: Resolver<ResolversTypes['JDictAPIResult'], ParentType, ContextType, RequireFields<QueryJdictSearchWordArgs, 'word'>>;
   jishoSearchWord?: Resolver<ResolversTypes['JishoAPIResult'], ParentType, ContextType, RequireFields<QueryJishoSearchWordArgs, 'word'>>;
   kanji?: Resolver<ResolversTypes['Kanji'], ParentType, ContextType, RequireFields<QueryKanjiArgs, 'id'>>;
   tags?: Resolver<Maybe<Array<ResolversTypes['Tag']>>, ParentType, ContextType>;
   word?: Resolver<ResolversTypes['Word'], ParentType, ContextType, RequireFields<QueryWordArgs, 'id'>>;
-  words?: Resolver<Maybe<Array<ResolversTypes['Word']>>, ParentType, ContextType, Partial<QueryWordsArgs>>;
+  words?: Resolver<ResolversTypes['WordsResponse'], ParentType, ContextType, Partial<QueryWordsArgs>>;
 };
 
 export type TagResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Tag'] = ResolversParentTypes['Tag']> = {
@@ -496,6 +520,12 @@ export type WordExplainResolvers<ContextType = GraphQLContext, ParentType extend
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type WordsResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['WordsResponse'] = ResolversParentTypes['WordsResponse']> = {
+  data?: Resolver<Maybe<Array<ResolversTypes['Word']>>, ParentType, ContextType>;
+  pagination?: Resolver<ResolversTypes['PaginationData'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type Resolvers<ContextType = GraphQLContext> = {
   JDictAPIResult?: JDictApiResultResolvers<ContextType>;
   JDictKanji?: JDictKanjiResolvers<ContextType>;
@@ -507,9 +537,11 @@ export type Resolvers<ContextType = GraphQLContext> = {
   JishoResult?: JishoResultResolvers<ContextType>;
   Kanji?: KanjiResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
+  PaginationData?: PaginationDataResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Tag?: TagResolvers<ContextType>;
   Word?: WordResolvers<ContextType>;
   WordExplain?: WordExplainResolvers<ContextType>;
+  WordsResponse?: WordsResponseResolvers<ContextType>;
 };
 

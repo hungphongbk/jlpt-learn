@@ -10,9 +10,17 @@ input StringComparator{
 input ArrayStringComparator{
     arrayContainsAny:[String!]
 }
+type PaginationData{
+    page:Int!
+    totalPage:Int!
+}
+type WordsResponse{
+    pagination:PaginationData!
+    data:[Word!]
+}
 
 type Query{
-    words(where: WordQueryInput, limit: Int):[Word!]
+    words(where: WordQueryInput, limit: Int,page:Int):WordsResponse!
     word(id:String!):Word!
     kanji(id:String!):Kanji!
     tags:[Tag!]

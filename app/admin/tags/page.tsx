@@ -14,7 +14,7 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import { GET_ALL_WORD, QUERY_ALL_TAGS } from "@/src/components/gql";
-import React, { useContext, useEffect, useMemo } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import {
   TreeExpandedKeys,
   TreeNode,
@@ -24,6 +24,7 @@ import { Tree, useTree } from "@/src/components/common/tree";
 import AddNewWord from "@/src/components/admin/AddNewWord";
 import { AdminContext } from "@/app/admin/context";
 import { useRouter } from "next/navigation";
+import ReactPaginate from "react-paginate";
 
 export default function TagsPage() {
   const { data } = useQuery(QUERY_ALL_TAGS);
@@ -71,6 +72,7 @@ export default function TagsPage() {
     [selectionKeys]
   );
 
+  const [page, setPage] = useState(0);
   const { data: wordsData } = useQuery(GET_ALL_WORD, {
     variables: {
       where: {
@@ -78,6 +80,7 @@ export default function TagsPage() {
           arrayContainsAny: checkeds,
         },
       },
+      page,
     },
     skip: checkeds.length === 0,
   });
@@ -119,7 +122,7 @@ export default function TagsPage() {
               </Tr>
             </Thead>
             <Tbody>
-              {wordsData?.words?.map((word) => (
+              {wordsData?.words?.data?.map((word) => (
                 <Tr key={word.id}>
                   <Td
                     onClick={() => {
@@ -135,6 +138,19 @@ export default function TagsPage() {
             </Tbody>
           </Table>
         </TableContainer>
+        <ReactPaginate
+          breakLabel="..."
+          nextLabel="next >"
+          onPageChange={(e) => setPage(e.selected)}
+          pageRangeDisplayed={5}
+          pageCount={wordsData?.words?.pagination?.totalPage ?? 0}
+          previousLabel="< previous"
+          renderOnZeroPageCount={null}
+          containerClassName={"flex list-none"}
+          className={"flex list-none"}
+          pageLinkClassName={"px-2 py-1"}
+          activeLinkClassName={"bg-slate-200"}
+        />
       </Stack>
     </Flex>
   );

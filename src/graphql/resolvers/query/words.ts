@@ -6,7 +6,7 @@ import DocumentReference = firestore.DocumentReference;
 
 export const queryWords: QueryResolvers["words"] = async (
   _,
-  { where, limit },
+  { where, limit, page = -1 },
   { fsCollection }
 ) => {
   let ref: firestore.Query<firestore.DocumentData> = fsCollection(
@@ -22,8 +22,14 @@ export const queryWords: QueryResolvers["words"] = async (
       where.tags.arrayContainsAny.map((id) => fsCollection("tag").doc(id))
     );
   }
-  if (limit) {
+  if (limit && page! < 0) {
     ref = ref.limit(limit);
+  }
+
+  let totalPage = -1;
+  if (page! >= 0) {
+    totalPage = Math.floor((await ref.count().get()).data().count / 10);
+    ref = ref.limit(10).offset(page! * 10);
   }
 
   const docs = (await ref.get()).docs.map((doc) => ({
@@ -31,7 +37,13 @@ export const queryWords: QueryResolvers["words"] = async (
     ...doc.data(),
   }));
   // console.log(docs);
-  return docs as any;
+  return {
+    pagination: {
+      page: page!,
+      totalPage,
+    },
+    data: docs as any,
+  };
 };
 
 export const queryOneWord: QueryResolvers["word"] = async (
