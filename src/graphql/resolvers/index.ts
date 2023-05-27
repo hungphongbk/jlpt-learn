@@ -2,22 +2,13 @@ import addNewWord, {
   setOppositeWord,
 } from "@/src/graphql/resolvers/mutation/addNewWord";
 import { IResolvers } from "@graphql-tools/utils";
-import {
-  queryKanjiInWord,
-  queryOneWord,
-  queryOppositesInWord,
-  queryTagsInWord,
-  queryWords,
-} from "@/src/graphql/resolvers/query/words";
+import { queryOneWord, queryWords } from "@/src/graphql/resolvers/query/words";
 import { queryOneKanji } from "@/src/graphql/resolvers/query/kanji";
 import {
   upsertKanji,
   upsertKanjis,
 } from "@/src/graphql/resolvers/mutation/upsertKanji";
-import {
-  queryChildrenTags,
-  queryTags,
-} from "@/src/graphql/resolvers/query/tags";
+import { queryTags } from "@/src/graphql/resolvers/query/tags";
 import {
   JDictKanji_queryIsExist,
   JDictWord_queryIsExist,
@@ -44,14 +35,6 @@ export default {
     tags: queryTags,
     jishoSearchWord: queryJishoSearchWord,
     jdictSearchWord: queryJDictSearchWord,
-  },
-  Word: {
-    kanji: queryKanjiInWord,
-    tags: queryTagsInWord,
-    opposite: queryOppositesInWord,
-  },
-  Tag: {
-    children: queryChildrenTags,
   },
   JDictWord: {
     isExist: JDictWord_queryIsExist,

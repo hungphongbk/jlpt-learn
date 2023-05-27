@@ -24,7 +24,7 @@ function Page() {
           <BatchImport />
         </HStack>
         <SimpleGrid columns={{ base: 2, md: 4, lg: 6, xl: 8 }} spacing={2}>
-          {data?.words?.map((word: any) => (
+          {data?.words?.data?.map((word: any) => (
             <Card key={word.id} size={"sm"}>
               <CardHeader
                 onClick={() => {

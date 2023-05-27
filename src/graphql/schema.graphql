@@ -1,6 +1,8 @@
 scalar JSON
 scalar JSONObject
 
+directive @refs on FIELD_DEFINITION
+
 input StringComparator{
     eq:String
     neq:String

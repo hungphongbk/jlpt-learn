@@ -1,7 +1,7 @@
 type Tag{
     id:String!
     label:String!
-    children:[Tag!]
+    children:[Tag!] @refs
     parent:Tag
 }
 input TagUpsertInput{
@@ -29,10 +29,10 @@ type Word{
     id: ID!
     word:String!
     pronounce:String!
-    tags:[Tag!]
-    kanji:[Kanji!]
+    tags:[Tag!] @refs
+    kanji:[Kanji!] @refs
     explain:[WordExplain!]!
-    opposite:[Word!]
+    opposite:[Word!] @refs
     #  metadata:WordMetadata
 }
 input WordInsertInput{

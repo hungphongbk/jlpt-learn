@@ -14,6 +14,7 @@ import { useResponseCache } from "@graphql-yoga/plugin-response-cache";
 import IORedis from "ioredis";
 import { createRedisCache } from "@envelop/response-cache-redis";
 import { FirebaseDocs } from "@/src/const";
+import { refsDirectiveTransformer } from "@/src/graphql/resolvers/directives/refs";
 import CollectionReference = admin.firestore.CollectionReference;
 import DocumentData = admin.firestore.DocumentData;
 
@@ -35,11 +36,15 @@ export interface GraphQLContext extends YogaInitialContext {
 
 const typeDefs = mergeTypeDefs([mainTypeDefs, typeDefs$1, typeDefs$2]);
 
-const graphqlServer = createYoga({
-  schema: createSchema({
+const schema = refsDirectiveTransformer(
+  createSchema({
     typeDefs,
     resolvers,
-  }) as any,
+  })
+);
+
+const graphqlServer = createYoga({
+  schema,
   context() {
     initializeAdmin();
     const firestore = getFirestore();

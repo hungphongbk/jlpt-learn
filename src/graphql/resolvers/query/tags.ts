@@ -1,5 +1,4 @@
-import { QueryResolvers, TagResolvers } from "@/types";
-import { convertSnapshot } from "@/src/graphql/utils/convert";
+import { QueryResolvers } from "@/types";
 
 export const queryTags: QueryResolvers["tags"] = async (
   _1,
@@ -14,14 +13,4 @@ export const queryTags: QueryResolvers["tags"] = async (
   }));
   // console.log(docs);
   return docs as any;
-};
-
-export const queryChildrenTags: TagResolvers["children"] = async (
-  { children },
-  _,
-  { fsCollection, firestore }
-) => {
-  if (!children) return null;
-  const docRefs = await firestore.getAll(...(children as any));
-  return docRefs.map(convertSnapshot);
 };
