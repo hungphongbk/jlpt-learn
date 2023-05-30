@@ -1,56 +1,64 @@
 import { KANJI_REGEX } from "@/src/const";
-import { MutationResolvers } from "@/types";
+import { MutationResolvers, WordInsertInput } from "@/types";
 import { FieldValue } from "firebase-admin/firestore";
-import { convertSnapshot, idToRef } from "@/src/graphql/utils/convert";
+import { convertSnapshot } from "@/src/graphql/utils/convert";
+import { prisma } from "@/src/db";
+import { Prisma } from ".prisma/client";
 
-const addNewWord: MutationResolvers["addNewWord"] = async (
-  _: any,
-  { word: { id: existId, tags: _tags = [], ...word } },
-  { cache, fsCollection }
-) => {
+async function convertGqlInputToPrismaInput(
+  word: Omit<WordInsertInput, "id">
+): Promise<Prisma.WordCreateArgs> {
+  const { explain, tags, ..._word } = word;
+
   const kanji = await word.word.split("").reduce(async (acc, val) => {
     if (KANJI_REGEX.test(val)) {
-      let kanjiRef = fsCollection("kanji").doc(val);
-      const kanjiDoc = await kanjiRef.get();
-      if (!kanjiDoc.exists) {
-        await kanjiRef.set({ hv: "" });
+      let kanjiDoc = await prisma.kanji.findUnique({ where: { id: val } });
+      if (!kanjiDoc) {
+        kanjiDoc = await prisma.kanji.create({ data: { id: val, hv: "" } });
       }
-      return [...(await acc), kanjiRef as unknown as string];
+      return [...(await acc), kanjiDoc!.id];
     }
     return await acc;
   }, Promise.resolve([] as string[]));
-  const tags = _tags!.map(idToRef("tag"));
-  for (const exp of word.explain) {
-    if (exp.tags) {
-      exp.tags = exp.tags.map(idToRef("tag")) as any[];
-    }
-  }
+
+  return {
+    data: {
+      ..._word,
+      explain: {
+        createMany: {
+          data: explain,
+        },
+      },
+      tags: {
+        connect: tags?.map((id) => ({ id })),
+      },
+      kanji: {
+        connect: kanji.map((id) => ({ id })),
+      },
+    },
+    include: {
+      explain: true,
+    },
+  };
+}
+
+const addNewWord: MutationResolvers["addNewWord"] = async (
+  _: any,
+  { word: { id: existId, ...word } },
+  { cache, fsCollection }
+) => {
+  const arg = await convertGqlInputToPrismaInput(word);
   if (existId) {
-    await fsCollection("vocabulary")
-      .doc(existId)
-      .update({
-        ...word,
-        tags: FieldValue.arrayUnion(...tags),
-      });
-    await cache.invalidate([{ typename: "Word" }]);
-    return {
-      id: existId,
-      tags,
-      ...word,
-    };
-  } else {
-    const result = await fsCollection("vocabulary").add({
-      ...word,
-      kanji,
-      tags,
-      createdAt: FieldValue.serverTimestamp(),
+    const rs = await prisma.word.update({
+      where: { id: Number(existId) },
+      ...arg,
     });
     await cache.invalidate([{ typename: "Word" }]);
-    return {
-      id: result!.id,
-      tags,
-      ...word,
-    } as any;
+    return rs as any;
+  } else {
+    const rs = await prisma.word.create(arg);
+    await cache.invalidate([{ typename: "Word" }]);
+    return rs as any;
   }
 };
 

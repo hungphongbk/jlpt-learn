@@ -1,0 +1,52 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tag {
+  id       String  @id
+  label    String
+  children Tag[]   @relation("SubTags")
+  parent   Tag?    @relation("SubTags", references: [id], fields: [parentId])
+  parentId String?
+
+  Word         Word[]
+  WordExplains WordExplain[]
+}
+
+model Kanji {
+  id String @id
+  hv String
+
+  word Word[]
+}
+
+model WordExplain {
+  id            Int      @id @default(autoincrement())
+  word          Word     @relation("WordExplain", fields: [wordId], references: [id])
+  wordId        Int
+  explain       String
+  tag           Tag[]
+  preferredKana Boolean?
+}
+
+model Word {
+  id        Int      @id @default(autoincrement())
+  word      String   @unique
+  pronounce String
+  tags      Tag[]
+  kanji     Kanji[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  opposite     Word[]        @relation("Opposites")
+  oppositeWith Word[]        @relation("Opposites")
+  explain      WordExplain[] @relation("WordExplain")
+}

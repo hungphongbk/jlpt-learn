@@ -12,7 +12,7 @@ type JishoAPIResult{
 type JDictKanji{
     id:Int!
     kanji: String!
-    hanviet: String!
+    hanviet: String! @lower
     isExist:Kanji
 }
 type JDictWord{

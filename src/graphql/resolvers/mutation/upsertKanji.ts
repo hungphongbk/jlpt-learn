@@ -1,18 +1,33 @@
 import { MutationResolvers } from "@/types";
 import { FirestoreCollections } from "@/src/const";
+import { Prisma } from ".prisma/client";
+import { prisma } from "@/src/db";
 
 export const upsertKanji: MutationResolvers["upsertKanji"] = async (
   _,
   { id, kanji },
   { firestore, cache }
 ) => {
-  let kanjiRef = firestore.collection(FirestoreCollections.Kanji).doc(id);
-  await kanjiRef.set(kanji);
+  // convert
+  const arg: Prisma.KanjiUpsertArgs = {
+    where: { id },
+    create: { id, ...kanji },
+    update: kanji,
+  };
+
+  // execute
+  const rs = await prisma.kanji.upsert(arg);
   await cache.invalidate([{ typename: "Kanji", id }]);
 
-  return { id, ...(await kanjiRef.get()).data() };
+  return rs;
 };
 
+/**
+ * @deprecated
+ * @param _
+ * @param kanjis
+ * @param firestore
+ */
 export const upsertKanjis: MutationResolvers["upsertKanjis"] = async (
   _,
   { kanjis },

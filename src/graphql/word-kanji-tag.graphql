@@ -1,7 +1,7 @@
 type Tag{
     id:String!
     label:String!
-    children:[Tag!] @refs
+    children:[Tag!] @refs(source: "tag")
     parent:Tag
 }
 input TagUpsertInput{
@@ -12,7 +12,7 @@ input TagUpsertInput{
 
 type Kanji{
     id:String!
-    hv:String
+    hv:String @lower
 }
 
 type WordExplain{
@@ -29,10 +29,10 @@ type Word{
     id: ID!
     word:String!
     pronounce:String!
-    tags:[Tag!] @refs
-    kanji:[Kanji!] @refs
+    tags:[Tag!] @refs(source:"word")
+    kanji:[Kanji!] @refs(source:"word")
     explain:[WordExplain!]!
-    opposite:[Word!] @refs
+    opposite:[Word!] @refs(source:"word")
     #  metadata:WordMetadata
 }
 input WordInsertInput{

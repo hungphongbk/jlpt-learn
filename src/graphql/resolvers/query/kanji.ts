@@ -1,18 +1,10 @@
 import { QueryResolvers } from "@/types";
-import { FirestoreCollections } from "@/src/const";
+import { prisma } from "@/src/db";
 
-export const queryOneKanji: QueryResolvers["kanji"] = async (
-  _,
-  { id },
-  { firestore }
-) => {
-  const doc = await firestore
-    .collection(FirestoreCollections.Kanji)
-    .doc(id)
-    .get();
+export const queryOneKanji: QueryResolvers["kanji"] = async (_, { id }) => {
+  const doc = await prisma.kanji.findUnique({
+    where: { id },
+  });
 
-  return {
-    id: doc.id,
-    ...doc.data(),
-  };
+  return doc! as any;
 };

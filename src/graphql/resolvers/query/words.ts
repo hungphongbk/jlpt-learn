@@ -1,40 +1,40 @@
 import { QueryResolvers } from "@/types";
-import { FirestoreCollections } from "@/src/const";
-import { firestore } from "firebase-admin";
-import { convertSnapshot } from "@/src/graphql/utils/convert";
+import { prisma } from "@/src/db";
+import { Prisma } from ".prisma/client";
+import WordWhereInput = Prisma.WordWhereInput;
 
 export const queryWords: QueryResolvers["words"] = async (
   _,
-  { where, limit, page = -1 },
-  { fsCollection }
+  { where, limit, page = -1 }
 ) => {
-  let ref: firestore.Query<firestore.DocumentData> = fsCollection(
-    "vocabulary"
-  ).orderBy("createdAt", "desc");
+  const whereInput: WordWhereInput = {};
   if (where?.word?.eq) {
-    ref = ref.where("word", "==", where.word.eq!);
+    whereInput.word = where.word.eq;
   }
   if (where?.tags?.arrayContainsAny) {
-    ref = ref.where(
-      "tags",
-      "array-contains-any",
-      where.tags.arrayContainsAny.map((id) => fsCollection("tag").doc(id))
-    );
-  }
-  if (limit && page! < 0) {
-    ref = ref.limit(limit);
+    whereInput.tags = {
+      some: { id: { equals: where.tags.arrayContainsAny[0] } },
+    };
   }
 
   let totalPage = -1;
   if (page! >= 0) {
-    totalPage = Math.floor((await ref.count().get()).data().count / 10);
-    ref = ref.limit(10).offset(page! * 10);
+    totalPage = Math.floor(
+      (await prisma.word.count({ where: whereInput })) / 10
+    );
   }
 
-  const docs = (await ref.get()).docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  }));
+  const docs = await prisma.word.findMany({
+    where: whereInput,
+    skip: page! < 0 ? undefined : page! * 10,
+    take: page! < 0 ? undefined : 10,
+    include: {
+      explain: true,
+    },
+    orderBy: {
+      updatedAt: "desc",
+    },
+  });
   // console.log(docs);
   return {
     pagination: {
@@ -50,10 +50,10 @@ export const queryOneWord: QueryResolvers["word"] = async (
   { id },
   { firestore }
 ) => {
-  const doc = await firestore
-    .collection(FirestoreCollections.Vocabulary)
-    .doc(id)
-    .get();
+  const doc = await prisma.word.findUnique({
+    where: { id: Number(id) },
+    include: { explain: true },
+  });
 
-  return convertSnapshot(doc) as any;
+  return doc as any;
 };

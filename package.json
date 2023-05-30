@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "postinstall": "prisma generate",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -27,6 +28,7 @@
     "@graphql-tools/schema": "^10.0.0",
     "@graphql-tools/utils": "^10.0.0",
     "@graphql-yoga/plugin-response-cache": "^1.9.1",
+    "@prisma/client": "^4.14.1",
     "@types/node": "18.16.3",
     "@types/react": "18.2.5",
     "@types/react-dom": "18.2.3",
@@ -75,6 +77,7 @@
     "eslint-config-prettier": "^8.8.0",
     "graphql-tag": "^2.12.6",
     "prettier": "^2.8.8",
+    "prisma": "^4.14.1",
     "ts-node": "^10.9.1"
   }
 }

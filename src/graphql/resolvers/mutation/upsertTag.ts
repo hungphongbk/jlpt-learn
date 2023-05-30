@@ -1,29 +1,28 @@
-import { MutationResolvers } from "@/types";
-import { FieldValue } from "firebase-admin/firestore";
-import { convertSnapshot } from "@/src/graphql/utils/convert";
+import { MutationResolvers, TagUpsertInput } from "@/types";
+import { Prisma } from ".prisma/client";
+import { prisma } from "@/src/db";
+
+async function convertGqlInputToPrismaInput({
+  id,
+  parentId,
+  ...tag
+}: TagUpsertInput): Promise<Prisma.TagUpsertArgs> {
+  return {
+    where: { id },
+    create: { id, ...(tag as any), parent: { connect: { id: parentId } } },
+    update: {
+      ...(tag as any),
+      parent: { connect: { id: parentId ?? undefined } },
+    },
+  };
+}
 
 export const upsertTag: MutationResolvers["upsertTag"] = async (
   _,
-  { tag: { id, parentId, ...tag } },
-  { fsCollection, firestore, cache }
+  { tag },
+  { cache }
 ) => {
-  const tagRef = fsCollection("tag").doc(id);
-  const batch = firestore.batch();
-
-  if (parentId) {
-    const parent = fsCollection("tag").doc(parentId);
-    batch.set(tagRef, {
-      ...tag,
-      parent,
-    });
-    batch.update(parent, {
-      children: FieldValue.arrayUnion(tagRef),
-    });
-  } else {
-    batch.set(tagRef, tag);
-  }
-
-  await batch.commit();
+  const rs = await prisma.tag.upsert(await convertGqlInputToPrismaInput(tag));
   await cache.invalidate([{ typename: "Tag" }]);
-  return convertSnapshot(await tagRef.get()) as any;
+  return rs;
 };

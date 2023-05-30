@@ -1,30 +1,48 @@
-import { GraphQLSchema } from "graphql/type";
+import { GraphQLFieldConfig, GraphQLSchema } from "graphql/type";
 import { getDirective, MapperKind, mapSchema } from "@graphql-tools/utils";
-import { firestore } from "firebase-admin";
-import { convertSnapshot } from "@/src/graphql/utils/convert";
 import { defaultFieldResolver } from "@graphql-tools/executor";
-import DocumentReference = firestore.DocumentReference;
+
+function processLower(
+  schema: GraphQLSchema,
+  fieldConfig: GraphQLFieldConfig<any, any>
+) {
+  const upperDirective = getDirective(schema, fieldConfig, "lower")?.[0];
+
+  if (upperDirective) {
+    // Get this field's original resolver
+    const { resolve = defaultFieldResolver } = fieldConfig;
+
+    // Replace the original resolver with a function that *first* calls
+    // the original resolver, then converts its result to upper case
+    fieldConfig.resolve = async function (source, args, context, info) {
+      const result = await resolve(source, args, context, info);
+      if (typeof result === "string") {
+        return result.toUpperCase();
+      }
+      return result;
+    };
+  }
+}
 
 export const refsDirectiveTransformer = (schema: GraphQLSchema) =>
   mapSchema(schema, {
     [MapperKind.OBJECT_FIELD](fieldConfig) {
-      const directive = getDirective(schema, fieldConfig, "refs")?.[0];
-      if (directive) {
+      const refDirective = getDirective(schema, fieldConfig, "refs")?.[0];
+      if (refDirective) {
         const { resolve = defaultFieldResolver } = fieldConfig;
-        fieldConfig.resolve = async (source, args, context, info) => {
-          const _refs = (await resolve(
-            source,
-            args,
-            context,
-            info
-          )) as unknown as DocumentReference[];
-          // console.log(fieldConfig);
-          // console.log(_refs);
-          const refs = await context.firestore.getAll(..._refs);
-          return refs.map ? refs.map(convertSnapshot) : null;
+        const { source } = refDirective;
+        fieldConfig.resolve = async (src, args, context, info) => {
+          // @ts-ignore
+          return (prisma[source] as any)
+            .findUnique({
+              where: { id: src.id },
+            })
+            [fieldConfig.astNode!.name.value]();
         };
-
-        return fieldConfig;
       }
+
+      processLower(schema, fieldConfig);
+
+      return fieldConfig;
     },
   });

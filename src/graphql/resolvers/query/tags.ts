@@ -1,16 +1,15 @@
 import { QueryResolvers } from "@/types";
+import { prisma } from "@/src/db";
 
 export const queryTags: QueryResolvers["tags"] = async (
   _1,
   _2,
   { firestore, fsCollection }
 ) => {
-  const docs = (
-    await fsCollection("tag").where("parent", "==", null).get()
-  ).docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  }));
-  // console.log(docs);
+  const docs = await prisma.tag.findMany({
+    where: {
+      parentId: null,
+    },
+  });
   return docs as any;
 };

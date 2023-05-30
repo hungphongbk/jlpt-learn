@@ -10,9 +10,10 @@ if [[ $key =~ ^#.* ]];then
 
 else
     echo "Uploading" - $key
-    #sleep 2 #For vercel API
+    val=$2
+    sleep 2 #For vercel API
     vc env rm ${key} $2  -y
-    echo "${!key}" | vc env add $key $2
+    echo "${!key}" | vc env add $key ${val}
 fi
 done
 

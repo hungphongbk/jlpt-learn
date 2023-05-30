@@ -1,7 +1,10 @@
 scalar JSON
 scalar JSONObject
 
-directive @refs on FIELD_DEFINITION
+directive @refs(
+    source: String
+) on FIELD_DEFINITION
+directive @lower on FIELD_DEFINITION
 
 input StringComparator{
     eq:String
