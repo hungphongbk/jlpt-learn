@@ -31,6 +31,8 @@ type Query{
     tags:[Tag!]
     jishoSearchWord(word: String!):JishoAPIResult!
     jdictSearchWord(word: String!):JDictAPIResult!
+
+    game(input:GameInput!):Game!
 }
 type Mutation{
     addNewWord(word:WordInsertInput!):Word!

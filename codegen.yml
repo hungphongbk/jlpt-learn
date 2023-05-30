@@ -5,7 +5,7 @@ documents:
   - ./src/components/**/*.tsx
   - ./app/**/*.tsx
 generates:
-  ./types/schema.d.ts:
+  ./types/schema.ts:
     config:
       contextType: ../src/graphql/graphql#GraphQLContext
       scalars:

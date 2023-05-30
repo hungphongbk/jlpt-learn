@@ -1,0 +1,29 @@
+enum SceneType{
+    MIX_MATCH
+    WORD_TO_TEXT
+}
+
+type MixMatchScene{
+    type: SceneType!
+    totalRows:Int!
+    left:[String!]!
+    right:[String!]!
+    comparison:[[Int!]!]!
+}
+
+type WordToTextScene{
+    type: SceneType!
+    word:String!
+    romaji:String!
+}
+
+union GameScene = MixMatchScene | WordToTextScene
+
+type Game{
+    scenes:[GameScene!]!
+}
+
+input GameInput{
+    numberOfMatches:Int!
+    tags:[String!]!
+}

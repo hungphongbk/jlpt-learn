@@ -5,6 +5,7 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -20,6 +21,18 @@ export type Scalars = {
 export type ArrayStringComparator = {
   arrayContainsAny?: InputMaybe<Array<Scalars['String']>>;
 };
+
+export type Game = {
+  __typename?: 'Game';
+  scenes: Array<GameScene>;
+};
+
+export type GameInput = {
+  numberOfMatches: Scalars['Int'];
+  tags: Array<Scalars['String']>;
+};
+
+export type GameScene = MixMatchScene | WordToTextScene;
 
 export type JDictApiResult = {
   __typename?: 'JDictAPIResult';
@@ -77,6 +90,15 @@ export type KanjiUpsertInputPair = {
   id: Scalars['String'];
 };
 
+export type MixMatchScene = {
+  __typename?: 'MixMatchScene';
+  comparison: Array<Array<Scalars['Int']>>;
+  left: Array<Scalars['String']>;
+  right: Array<Scalars['String']>;
+  totalRows: Scalars['Int'];
+  type: SceneType;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   addNewWord: Word;
@@ -121,12 +143,18 @@ export type PaginationData = {
 
 export type Query = {
   __typename?: 'Query';
+  game: Game;
   jdictSearchWord: JDictApiResult;
   jishoSearchWord: JishoApiResult;
   kanji: Kanji;
   tags?: Maybe<Array<Tag>>;
   word: Word;
   words: WordsResponse;
+};
+
+
+export type QueryGameArgs = {
+  input: GameInput;
 };
 
 
@@ -155,6 +183,11 @@ export type QueryWordsArgs = {
   page?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<WordQueryInput>;
 };
+
+export enum SceneType {
+  MixMatch = 'MIX_MATCH',
+  WordToText = 'WORD_TO_TEXT'
+}
 
 export type StringComparator = {
   eq?: InputMaybe<Scalars['String']>;
@@ -212,6 +245,13 @@ export type WordInsertInput = {
 export type WordQueryInput = {
   tags?: InputMaybe<ArrayStringComparator>;
   word?: InputMaybe<StringComparator>;
+};
+
+export type WordToTextScene = {
+  __typename?: 'WordToTextScene';
+  romaji: Scalars['String'];
+  type: SceneType;
+  word: Scalars['String'];
 };
 
 export type WordsResponse = {
@@ -350,12 +390,23 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
   info: GraphQLResolveInfo
 ) => TResult | Promise<TResult>;
 
+/** Mapping of union types */
+export type ResolversUnionTypes = {
+  GameScene: ( MixMatchScene ) | ( WordToTextScene );
+};
 
+/** Mapping of union parent types */
+export type ResolversUnionParentTypes = {
+  GameScene: ( MixMatchScene ) | ( WordToTextScene );
+};
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   ArrayStringComparator: ArrayStringComparator;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  Game: ResolverTypeWrapper<Omit<Game, 'scenes'> & { scenes: Array<ResolversTypes['GameScene']> }>;
+  GameInput: GameInput;
+  GameScene: ResolverTypeWrapper<ResolversUnionTypes['GameScene']>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   JDictAPIResult: ResolverTypeWrapper<JDictApiResult>;
@@ -369,9 +420,11 @@ export type ResolversTypes = {
   Kanji: ResolverTypeWrapper<Kanji>;
   KanjiUpsertInput: KanjiUpsertInput;
   KanjiUpsertInputPair: KanjiUpsertInputPair;
+  MixMatchScene: ResolverTypeWrapper<MixMatchScene>;
   Mutation: ResolverTypeWrapper<{}>;
   PaginationData: ResolverTypeWrapper<PaginationData>;
   Query: ResolverTypeWrapper<{}>;
+  SceneType: SceneType;
   String: ResolverTypeWrapper<Scalars['String']>;
   StringComparator: StringComparator;
   Tag: ResolverTypeWrapper<Tag>;
@@ -381,6 +434,7 @@ export type ResolversTypes = {
   WordExplainInput: WordExplainInput;
   WordInsertInput: WordInsertInput;
   WordQueryInput: WordQueryInput;
+  WordToTextScene: ResolverTypeWrapper<WordToTextScene>;
   WordsResponse: ResolverTypeWrapper<WordsResponse>;
 };
 
@@ -388,6 +442,9 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   ArrayStringComparator: ArrayStringComparator;
   Boolean: Scalars['Boolean'];
+  Game: Omit<Game, 'scenes'> & { scenes: Array<ResolversParentTypes['GameScene']> };
+  GameInput: GameInput;
+  GameScene: ResolversUnionParentTypes['GameScene'];
   ID: Scalars['ID'];
   Int: Scalars['Int'];
   JDictAPIResult: JDictApiResult;
@@ -401,6 +458,7 @@ export type ResolversParentTypes = {
   Kanji: Kanji;
   KanjiUpsertInput: KanjiUpsertInput;
   KanjiUpsertInputPair: KanjiUpsertInputPair;
+  MixMatchScene: MixMatchScene;
   Mutation: {};
   PaginationData: PaginationData;
   Query: {};
@@ -413,7 +471,27 @@ export type ResolversParentTypes = {
   WordExplainInput: WordExplainInput;
   WordInsertInput: WordInsertInput;
   WordQueryInput: WordQueryInput;
+  WordToTextScene: WordToTextScene;
   WordsResponse: WordsResponse;
+};
+
+export type LowerDirectiveArgs = { };
+
+export type LowerDirectiveResolver<Result, Parent, ContextType = GraphQLContext, Args = LowerDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type RefsDirectiveArgs = {
+  source?: Maybe<Scalars['String']>;
+};
+
+export type RefsDirectiveResolver<Result, Parent, ContextType = GraphQLContext, Args = RefsDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type GameResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Game'] = ResolversParentTypes['Game']> = {
+  scenes?: Resolver<Array<ResolversTypes['GameScene']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type GameSceneResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['GameScene'] = ResolversParentTypes['GameScene']> = {
+  __resolveType: TypeResolveFn<'MixMatchScene' | 'WordToTextScene', ParentType, ContextType>;
 };
 
 export type JDictApiResultResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['JDictAPIResult'] = ResolversParentTypes['JDictAPIResult']> = {
@@ -471,6 +549,15 @@ export type KanjiResolvers<ContextType = GraphQLContext, ParentType extends Reso
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type MixMatchSceneResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['MixMatchScene'] = ResolversParentTypes['MixMatchScene']> = {
+  comparison?: Resolver<Array<Array<ResolversTypes['Int']>>, ParentType, ContextType>;
+  left?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  right?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  totalRows?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['SceneType'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type MutationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   addNewWord?: Resolver<ResolversTypes['Word'], ParentType, ContextType, RequireFields<MutationAddNewWordArgs, 'word'>>;
   setOppositeWord?: Resolver<ResolversTypes['Word'], ParentType, ContextType, RequireFields<MutationSetOppositeWordArgs, 'oppositeWordId' | 'wordID'>>;
@@ -486,6 +573,7 @@ export type PaginationDataResolvers<ContextType = GraphQLContext, ParentType ext
 };
 
 export type QueryResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  game?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<QueryGameArgs, 'input'>>;
   jdictSearchWord?: Resolver<ResolversTypes['JDictAPIResult'], ParentType, ContextType, RequireFields<QueryJdictSearchWordArgs, 'word'>>;
   jishoSearchWord?: Resolver<ResolversTypes['JishoAPIResult'], ParentType, ContextType, RequireFields<QueryJishoSearchWordArgs, 'word'>>;
   kanji?: Resolver<ResolversTypes['Kanji'], ParentType, ContextType, RequireFields<QueryKanjiArgs, 'id'>>;
@@ -520,6 +608,13 @@ export type WordExplainResolvers<ContextType = GraphQLContext, ParentType extend
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type WordToTextSceneResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['WordToTextScene'] = ResolversParentTypes['WordToTextScene']> = {
+  romaji?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['SceneType'], ParentType, ContextType>;
+  word?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type WordsResponseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['WordsResponse'] = ResolversParentTypes['WordsResponse']> = {
   data?: Resolver<Maybe<Array<ResolversTypes['Word']>>, ParentType, ContextType>;
   pagination?: Resolver<ResolversTypes['PaginationData'], ParentType, ContextType>;
@@ -527,6 +622,8 @@ export type WordsResponseResolvers<ContextType = GraphQLContext, ParentType exte
 };
 
 export type Resolvers<ContextType = GraphQLContext> = {
+  Game?: GameResolvers<ContextType>;
+  GameScene?: GameSceneResolvers<ContextType>;
   JDictAPIResult?: JDictApiResultResolvers<ContextType>;
   JDictKanji?: JDictKanjiResolvers<ContextType>;
   JDictWord?: JDictWordResolvers<ContextType>;
@@ -536,12 +633,18 @@ export type Resolvers<ContextType = GraphQLContext> = {
   JishoJapaneseWord?: JishoJapaneseWordResolvers<ContextType>;
   JishoResult?: JishoResultResolvers<ContextType>;
   Kanji?: KanjiResolvers<ContextType>;
+  MixMatchScene?: MixMatchSceneResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   PaginationData?: PaginationDataResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Tag?: TagResolvers<ContextType>;
   Word?: WordResolvers<ContextType>;
   WordExplain?: WordExplainResolvers<ContextType>;
+  WordToTextScene?: WordToTextSceneResolvers<ContextType>;
   WordsResponse?: WordsResponseResolvers<ContextType>;
 };
 
+export type DirectiveResolvers<ContextType = GraphQLContext> = {
+  lower?: LowerDirectiveResolver<any, any, ContextType>;
+  refs?: RefsDirectiveResolver<any, any, ContextType>;
+};

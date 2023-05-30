@@ -17,6 +17,10 @@ import {
 } from "@/src/graphql/resolvers/query/lib";
 import { upsertTag } from "@/src/graphql/resolvers/mutation/upsertTag";
 import { JSONObjectResolver, JSONResolver } from "graphql-scalars";
+import {
+  __GameSceneResolverType,
+  queryGame,
+} from "@/src/graphql/resolvers/query/game";
 
 export default {
   JSON: JSONResolver,
@@ -35,11 +39,16 @@ export default {
     tags: queryTags,
     jishoSearchWord: queryJishoSearchWord,
     jdictSearchWord: queryJDictSearchWord,
+    //game
+    game: queryGame,
   },
   JDictWord: {
     isExist: JDictWord_queryIsExist,
   },
   JDictKanji: {
     isExist: JDictKanji_queryIsExist,
+  },
+  GameScene: {
+    __resolveType: __GameSceneResolverType,
   },
 } as IResolvers;

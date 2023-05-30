@@ -55,6 +55,7 @@
     "lodash": "^4.17.21",
     "next": "^13.4.3",
     "postcss": "8.4.23",
+    "prisma-redis-middleware": "4.8.0",
     "ramda": "^0.29.0",
     "raw-loader": "^4.0.2",
     "react": "18.2.0",
@@ -63,7 +64,8 @@
     "react-paginate": "^8.2.0",
     "redis": "^4.6.6",
     "tailwindcss": "3.3.2",
-    "typescript": "5.0.4"
+    "typescript": "5.0.4",
+    "wanakana": "^5.1.0"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^3.3.1",

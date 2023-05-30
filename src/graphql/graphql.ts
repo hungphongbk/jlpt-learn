@@ -1,7 +1,8 @@
 import { createSchema, createYoga, YogaInitialContext } from "graphql-yoga"; // @ts-ignore
 import mainTypeDefs from "./schema.graphql"; // @ts-ignore
 import typeDefs$1 from "./word-kanji-tag.graphql"; // @ts-ignore
-import typeDefs$2 from "./lib.graphql";
+import typeDefs$2 from "./lib.graphql"; // @ts-ignore
+import typeDefs$3 from "./game.graphql";
 
 import resolvers from "./resolvers";
 import { initializeAdmin } from "@/src/firebase-admin/firestore";
@@ -34,7 +35,12 @@ export interface GraphQLContext extends YogaInitialContext {
   cache: typeof cache;
 }
 
-const typeDefs = mergeTypeDefs([mainTypeDefs, typeDefs$1, typeDefs$2]);
+const typeDefs = mergeTypeDefs([
+  mainTypeDefs,
+  typeDefs$1,
+  typeDefs$2,
+  typeDefs$3,
+]);
 
 const schema = refsDirectiveTransformer(
   createSchema({
@@ -64,6 +70,9 @@ const graphqlServer = createYoga({
       ttl: 300_000,
       // @ts-ignore
       cache,
+      ttlPerSchemaCoordinate: {
+        "Query.game": 1_000,
+      },
     }),
   ],
 });

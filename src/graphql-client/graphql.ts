@@ -20,6 +20,18 @@ export type ArrayStringComparator = {
   arrayContainsAny?: InputMaybe<Array<Scalars['String']>>;
 };
 
+export type Game = {
+  __typename?: 'Game';
+  scenes: Array<GameScene>;
+};
+
+export type GameInput = {
+  numberOfMatches: Scalars['Int'];
+  tags: Array<Scalars['String']>;
+};
+
+export type GameScene = MixMatchScene | WordToTextScene;
+
 export type JDictApiResult = {
   __typename?: 'JDictAPIResult';
   data: Array<JDictWord>;
@@ -76,6 +88,15 @@ export type KanjiUpsertInputPair = {
   id: Scalars['String'];
 };
 
+export type MixMatchScene = {
+  __typename?: 'MixMatchScene';
+  comparison: Array<Array<Scalars['Int']>>;
+  left: Array<Scalars['String']>;
+  right: Array<Scalars['String']>;
+  totalRows: Scalars['Int'];
+  type: SceneType;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   addNewWord: Word;
@@ -120,12 +141,18 @@ export type PaginationData = {
 
 export type Query = {
   __typename?: 'Query';
+  game: Game;
   jdictSearchWord: JDictApiResult;
   jishoSearchWord: JishoApiResult;
   kanji: Kanji;
   tags?: Maybe<Array<Tag>>;
   word: Word;
   words: WordsResponse;
+};
+
+
+export type QueryGameArgs = {
+  input: GameInput;
 };
 
 
@@ -154,6 +181,11 @@ export type QueryWordsArgs = {
   page?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<WordQueryInput>;
 };
+
+export enum SceneType {
+  MixMatch = 'MIX_MATCH',
+  WordToText = 'WORD_TO_TEXT'
+}
 
 export type StringComparator = {
   eq?: InputMaybe<Scalars['String']>;
@@ -211,6 +243,13 @@ export type WordInsertInput = {
 export type WordQueryInput = {
   tags?: InputMaybe<ArrayStringComparator>;
   word?: InputMaybe<StringComparator>;
+};
+
+export type WordToTextScene = {
+  __typename?: 'WordToTextScene';
+  romaji: Scalars['String'];
+  type: SceneType;
+  word: Scalars['String'];
 };
 
 export type WordsResponse = {
