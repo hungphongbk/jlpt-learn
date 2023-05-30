@@ -10,12 +10,35 @@ import { prisma } from "@/src/db";
 
 const sceneTypes = [SceneType.MixMatch];
 
+const mixAndMatchTypes = [
+  "kanji-kana",
+  "kanji-meaning",
+  "kana-meaning",
+] as const;
+
 export const __GameSceneResolverType: GameSceneResolvers["__resolveType"] = (
   obj
 ) => {
   if (obj.type === SceneType.MixMatch) return "MixMatchScene";
   return "WordToTextScene";
 };
+
+type ArrElement<ArrType> = ArrType extends readonly (infer ElementType)[]
+  ? ElementType
+  : never;
+
+function getLeft(mixAndMatchType: ArrElement<typeof mixAndMatchTypes>, p: any) {
+  if (mixAndMatchType === "kana-meaning") return p.pronounce;
+  return p.explain[0].preferredKana ? p.pronounce : p.word;
+}
+
+function getRight(
+  mixAndMatchType: ArrElement<typeof mixAndMatchTypes>,
+  p: any
+) {
+  if (mixAndMatchType === "kanji-kana") return p.pronounce;
+  return p.explain[0].explain;
+}
 
 export const queryGame: QueryResolvers["game"] = async (_, { input }) => {
   const scenes: GameScene[] = [];
@@ -28,14 +51,16 @@ export const queryGame: QueryResolvers["game"] = async (_, { input }) => {
     const type = sample(sceneTypes);
 
     if (type === SceneType.MixMatch) {
+      const mixAndMatchType = sample(mixAndMatchTypes);
+
       const picked = sampleSize(words, 5);
       picked.forEach((p) => {
         const index = words.indexOf(p);
         if (index) words.splice(index, 1);
       });
       let picked2 = picked.map((p, index) => ({
-        left: p.explain[0].preferredKana ? p.pronounce : p.word,
-        right: p.explain[0].explain,
+        left: getLeft(mixAndMatchType!, p),
+        right: getRight(mixAndMatchType!, p),
         index,
       }));
       const left = picked2.map((p) => p.left);
@@ -47,6 +72,7 @@ export const queryGame: QueryResolvers["game"] = async (_, { input }) => {
         type,
         totalRows: 5,
         left,
+        leftIsKanji: mixAndMatchType !== "kana-meaning",
         right,
         comparison,
       } as MixMatchScene);

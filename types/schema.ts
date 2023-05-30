@@ -94,6 +94,7 @@ export type MixMatchScene = {
   __typename?: 'MixMatchScene';
   comparison: Array<Array<Scalars['Int']>>;
   left: Array<Scalars['String']>;
+  leftIsKanji: Scalars['Boolean'];
   right: Array<Scalars['String']>;
   totalRows: Scalars['Int'];
   type: SceneType;
@@ -552,6 +553,7 @@ export type KanjiResolvers<ContextType = GraphQLContext, ParentType extends Reso
 export type MixMatchSceneResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['MixMatchScene'] = ResolversParentTypes['MixMatchScene']> = {
   comparison?: Resolver<Array<Array<ResolversTypes['Int']>>, ParentType, ContextType>;
   left?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  leftIsKanji?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   right?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   totalRows?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['SceneType'], ParentType, ContextType>;

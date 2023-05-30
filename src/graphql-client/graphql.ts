@@ -92,6 +92,7 @@ export type MixMatchScene = {
   __typename?: 'MixMatchScene';
   comparison: Array<Array<Scalars['Int']>>;
   left: Array<Scalars['String']>;
+  leftIsKanji: Scalars['Boolean'];
   right: Array<Scalars['String']>;
   totalRows: Scalars['Int'];
   type: SceneType;
